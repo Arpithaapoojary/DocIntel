@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply bg-paper text-ink font-body antialiased dark:bg-paper-dark dark:text-ink-dark;
+  }
+  h1, h2, h3 {
+    @apply font-display;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-signal;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Signature element: citation "index tab" chip, styled after a library
+     card-catalog tab. Used for every source citation across the app. */
+  .citation-tab {
+    @apply inline-flex items-center gap-1.5 rounded-t-md rounded-br-md border border-signal/30
+           bg-signal/5 px-2.5 py-1 font-mono text-xs text-signal
+           dark:border-signal-dark/40 dark:bg-signal-dark/10 dark:text-signal-dark;
+  }
+}

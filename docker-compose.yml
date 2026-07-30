@@ -14,9 +14,16 @@ services:
       - backend_data:/app/data
     restart: unless-stopped
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ragapp-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
 volumes:
   backend_data:
-
-# Phase 2+ will add:
-#   frontend: (React/Vite build served via Nginx)
-#   nginx:    (reverse proxy in front of both)
