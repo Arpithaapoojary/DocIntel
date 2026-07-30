@@ -40,3 +40,18 @@ class ChatHistoryRepository:
         count = self.db.query(ChatMessage).filter(ChatMessage.user_id == user_id).delete()
         self.db.commit()
         return count
+
+    def count_for_user(self, user_id: str) -> int:
+        return self.db.query(ChatMessage).filter(ChatMessage.user_id == user_id).count()
+
+    def list_recent_by_user(self, user_id: str, limit: int = 5) -> list[ChatMessage]:
+        return (
+            self.db.query(ChatMessage)
+            .filter(ChatMessage.user_id == user_id)
+            .order_by(ChatMessage.created_at.desc())
+            .limit(limit)
+            .all()
+        )
+
+    def count_all(self) -> int:
+        return self.db.query(ChatMessage).count()

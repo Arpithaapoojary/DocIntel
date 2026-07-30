@@ -11,9 +11,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api import admin as admin_router
 from app.api import auth as auth_router
+from app.api import dashboard as dashboard_router
 from app.api import documents as documents_router
 from app.api import qa as qa_router
+from app.api import search as search_router
 from app.core.config import settings
 from app.database.session import Base, engine
 from app.middleware.rate_limit import RateLimitMiddleware
@@ -52,6 +55,9 @@ def create_app() -> FastAPI:
     app.include_router(auth_router.router, prefix="/api")
     app.include_router(documents_router.router, prefix="/api")
     app.include_router(qa_router.router, prefix="/api")
+    app.include_router(dashboard_router.router, prefix="/api")
+    app.include_router(search_router.router, prefix="/api")
+    app.include_router(admin_router.router, prefix="/api")
 
     @app.get("/api/health", tags=["System"])
     def health_check():

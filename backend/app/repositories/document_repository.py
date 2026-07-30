@@ -70,6 +70,28 @@ class DocumentRepository:
         )
         return total or 0
 
+    def count_for_user(self, user_id: str) -> int:
+        return self.db.query(Document).filter(Document.user_id == user_id).count()
+
+    def list_recent_by_user(self, user_id: str, limit: int = 5) -> list[Document]:
+        return (
+            self.db.query(Document)
+            .filter(Document.user_id == user_id)
+            .order_by(Document.uploaded_at.desc())
+            .limit(limit)
+            .all()
+        )
+
+    def count_all(self) -> int:
+        return self.db.query(Document).count()
+
+    def total_storage_all(self) -> int:
+        total = self.db.query(func.sum(Document.file_size_bytes)).scalar()
+        return total or 0
+
+    def list_all(self) -> list[Document]:
+        return self.db.query(Document).order_by(Document.uploaded_at.desc()).all()
+
     def delete(self, doc: Document) -> None:
         self.db.delete(doc)
         self.db.commit()

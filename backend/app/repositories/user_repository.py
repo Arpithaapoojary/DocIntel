@@ -19,16 +19,20 @@ class UserRepository:
     def get_by_id(self, user_id: str) -> User | None:
         return self.db.query(User).filter(User.id == user_id).first()
 
-    def create(self, user_in: UserCreate) -> User:
+    def create(self, user_in: UserCreate, is_admin: bool = False) -> User:
         user = User(
             email=user_in.email,
             full_name=user_in.full_name,
             hashed_password=hash_password(user_in.password),
+            is_admin=is_admin,
         )
         self.db.add(user)
         self.db.commit()
         self.db.refresh(user)
         return user
+
+    def count_users(self) -> int:
+        return self.db.query(User).count()
 
     def list_all(self) -> list[User]:
         return self.db.query(User).all()
