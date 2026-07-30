@@ -1,4 +1,4 @@
-# AI Document Intelligence Platform — Phase 1
+# AI Document Intelligence Platform — Phase 1 Full
 
 **Status:** Phase 1 of 6 — Backend core (auth, database, Docker). ✅ Tested, working.
 
