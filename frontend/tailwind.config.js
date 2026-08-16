@@ -10,9 +10,9 @@ export default {
         surface: '#FFFFFF',
         line: '#E4E4E1',
         signal: {
-          DEFAULT: '#0F766E',
-          light: '#14B8A6',
-          dark: '#2DD4BF',
+          DEFAULT: '#047857',
+          light: '#10B981',
+          dark: '#34D399',
         },
         flag: {
           DEFAULT: '#B45309',
