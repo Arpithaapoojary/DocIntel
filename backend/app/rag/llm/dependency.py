@@ -12,6 +12,7 @@ from app.rag.llm.base import BaseLLMClient
 from app.rag.llm.openai_client import OpenAILLMClient
 from app.rag.llm.ollama_client import OllamaLLMClient
 from app.rag.llm.groq_client import GroqLLMClient
+from app.rag.llm.extractive_client import ExtractiveClient
 
 
 @lru_cache()
@@ -25,7 +26,10 @@ def get_llm_client() -> BaseLLMClient:
     if settings.LLM_PROVIDER == "groq":
         return GroqLLMClient(api_key=settings.GROQ_API_KEY, model=settings.GROQ_MODEL)
 
+    if settings.LLM_PROVIDER == "extractive" or not settings.LLM_PROVIDER:
+        return ExtractiveClient()
+
     raise HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        detail=f"Unknown LLM_PROVIDER '{settings.LLM_PROVIDER}'. Use 'openai', 'groq', or 'ollama'.",
+        detail=f"Unknown LLM_PROVIDER '{settings.LLM_PROVIDER}'. Use 'extractive', 'groq', 'openai', or 'ollama'.",
     )

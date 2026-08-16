@@ -47,14 +47,11 @@ class Settings(BaseSettings):
     )
 
     # --- LLM provider ---
-    # "groq"   → free, fast, no GPU needed (recommended for most users)
-    # "openai" → requires OpenAI API key
-    # "ollama" → requires local Ollama server
-    LLM_PROVIDER: str = Field(default="groq")
+    # "openai" is the default because it requires no local model server.
+    # "ollama" can be selected later once a local Ollama instance is available.
+    LLM_PROVIDER: str = Field(default="openai")
     OPENAI_API_KEY: str = Field(default="")
     OPENAI_MODEL: str = Field(default="gpt-4o-mini")
-    GROQ_API_KEY: str = Field(default="")
-    GROQ_MODEL: str = Field(default="llama-3.1-8b-instant")
     OLLAMA_BASE_URL: str = Field(default="http://localhost:11434")
     OLLAMA_MODEL: str = Field(default="llama3")
 
