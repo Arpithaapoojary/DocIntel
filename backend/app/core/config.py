@@ -49,11 +49,13 @@ class Settings(BaseSettings):
     # --- LLM provider ---
     # "openai" is the default because it requires no local model server.
     # "ollama" can be selected later once a local Ollama instance is available.
-    LLM_PROVIDER: str = Field(default="openai")
+    LLM_PROVIDER: str = Field(default="extractive")
     OPENAI_API_KEY: str = Field(default="")
     OPENAI_MODEL: str = Field(default="gpt-4o-mini")
     OLLAMA_BASE_URL: str = Field(default="http://localhost:11434")
     OLLAMA_MODEL: str = Field(default="llama3")
+    GROQ_API_KEY: str = Field(default="")
+    GROQ_MODEL: str = Field(default="llama-3.1-8b-instant")
 
     # --- Rate limiting ---
     RATE_LIMIT_PER_MINUTE: int = Field(default=60)
