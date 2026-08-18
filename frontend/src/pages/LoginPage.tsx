@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Zap, Mail, Lock, ArrowRight } from 'lucide-react'
+import { Zap, Lock, ArrowRight } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Field } from '../components/ui/primitives'
 import { Button } from '../components/ui/Button'
