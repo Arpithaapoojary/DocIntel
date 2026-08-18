@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Users, FileStack, MessageSquare, HardDrive, Trash2, ShieldCheck } from 'lucide-react'
-import { adminDeleteUser, adminGetAnalytics, adminListUsers, extractErrorMessage } from '../lib/api'
+import { Users, FileStack, MessageSquare, HardDrive, Trash2, ShieldCheck, ShieldAlert, Search } from 'lucide-react'
+import { adminDeleteUser, adminGetAnalytics, adminListUsers, adminToggleUserRole, extractErrorMessage } from '../lib/api'
 import type { AdminAnalytics, AdminUser } from '../types'
 import { Skeleton, Badge } from '../components/ui/primitives'
 import { useAuth } from '../contexts/AuthContext'
@@ -47,7 +47,9 @@ export function AdminPage() {
   const { notify } = useToast()
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null)
   const [users, setUsers] = useState<AdminUser[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
+  const [togglingId, setTogglingId] = useState<string | null>(null)
 
   async function refresh() {
     const [a, u] = await Promise.all([adminGetAnalytics(), adminListUsers()])
@@ -58,6 +60,26 @@ export function AdminPage() {
   useEffect(() => {
     refresh().finally(() => setLoading(false))
   }, [])
+
+  async function handleToggleRole(u: AdminUser) {
+    if (u.id === currentUser?.id) {
+      notify('You cannot change your own admin role.', 'error')
+      return
+    }
+    const newRole = u.is_admin ? 'Standard User' : 'Administrator'
+    if (!confirm(`Change ${u.email}'s role to ${newRole}?`)) return
+    
+    setTogglingId(u.id)
+    try {
+      const updated = await adminToggleUserRole(u.id)
+      setUsers((prev) => prev.map((item) => (item.id === updated.id ? updated : item)))
+      notify(`Updated ${u.email} to ${newRole}.`)
+    } catch (err) {
+      notify(extractErrorMessage(err, 'Could not change user role.'), 'error')
+    } finally {
+      setTogglingId(null)
+    }
+  }
 
   async function handleDeleteUser(u: AdminUser) {
     if (u.id === currentUser?.id) return
@@ -71,11 +93,19 @@ export function AdminPage() {
     }
   }
 
+  const filteredUsers = users.filter((u) => {
+    const q = searchQuery.toLowerCase()
+    return (
+      u.email.toLowerCase().includes(q) ||
+      (u.full_name && u.full_name.toLowerCase().includes(q))
+    )
+  })
+
   return (
     <div className="flex flex-col gap-8">
       {/* ── Header ── */}
       <div className="flex items-center gap-3 animate-fade-in-up">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-flag to-amber-600 shadow-sm">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-rose-600 shadow-sm">
           <ShieldCheck className="h-5 w-5 text-white" />
         </div>
         <div>
@@ -106,14 +136,27 @@ export function AdminPage() {
 
       {/* ── User Table ── */}
       <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="font-display text-lg font-bold text-ink dark:text-ink-dark">Registered Users</h2>
             <p className="font-body text-xs text-ink/50 dark:text-ink-dark/50">
-              Manage accounts and access permissions across DocIntel.
+              Manage accounts, roles, and access permissions across DocIntel.
             </p>
           </div>
-          <Badge tone="neutral">{users.length} {users.length === 1 ? 'account' : 'accounts'}</Badge>
+
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink/40 dark:text-ink-dark/40" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search users…"
+                className="h-9 rounded-xl border border-line/60 bg-surface pl-9 pr-3 text-xs font-body text-ink placeholder:text-ink/35 focus:border-primary focus:outline-none dark:border-line-dark dark:bg-surface-dark dark:text-ink-dark shadow-sm"
+              />
+            </div>
+            <Badge tone="neutral">{filteredUsers.length} {filteredUsers.length === 1 ? 'user' : 'users'}</Badge>
+          </div>
         </div>
 
         <div className="overflow-hidden rounded-2xl border border-line/60 bg-surface shadow-card dark:border-line-dark dark:bg-surface-dark">
@@ -136,7 +179,7 @@ export function AdminPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line/40 font-body dark:divide-line-dark/40">
-                  {users.map((u) => (
+                  {filteredUsers.map((u) => (
                     <tr key={u.id} className="transition-colors hover:bg-surface-hover/50 dark:hover:bg-surface-dark-hover/50">
                       <td className="px-6 py-4">
                         <p className="font-medium text-sm text-ink dark:text-ink-dark">{u.full_name || u.email}</p>
@@ -149,18 +192,41 @@ export function AdminPage() {
                         {u.question_count}
                       </td>
                       <td className="px-6 py-4">
-                        <Badge tone={u.is_admin ? 'warning' : 'neutral'}>{u.is_admin ? 'Administrator' : 'Standard User'}</Badge>
+                        <Badge tone={u.is_admin ? 'warning' : 'neutral'}>
+                          {u.is_admin ? 'Administrator' : 'Standard User'}
+                        </Badge>
                       </td>
                       <td className="px-6 py-4 text-right">
                         {u.id !== currentUser?.id ? (
-                          <button
-                            onClick={() => handleDeleteUser(u)}
-                            aria-label={`Delete ${u.email}`}
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/20 px-2.5 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-500/10 dark:border-red-400/20 dark:text-red-400 dark:hover:bg-red-400/10"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                            Delete
-                          </button>
+                          <div className="inline-flex items-center gap-2">
+                            <button
+                              onClick={() => handleToggleRole(u)}
+                              disabled={togglingId === u.id}
+                              aria-label={`Toggle role for ${u.email}`}
+                              className="inline-flex items-center gap-1 rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary/10 dark:border-primary/30 dark:bg-primary/10 dark:text-primary-300 dark:hover:bg-primary/20"
+                            >
+                              {u.is_admin ? (
+                                <>
+                                  <ShieldAlert className="h-3.5 w-3.5 text-amber-500" />
+                                  Demote
+                                </>
+                              ) : (
+                                <>
+                                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+                                  Make Admin
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              onClick={() => handleDeleteUser(u)}
+                              aria-label={`Delete ${u.email}`}
+                              className="inline-flex items-center gap-1 rounded-lg border border-red-500/20 px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-500/10 dark:border-red-400/20 dark:text-red-400 dark:hover:bg-red-400/10"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                              Delete
+                            </button>
+                          </div>
                         ) : (
                           <span className="font-mono text-xs text-ink/30 dark:text-ink-dark/30">Current Account</span>
                         )}
@@ -176,3 +242,4 @@ export function AdminPage() {
     </div>
   )
 }
+

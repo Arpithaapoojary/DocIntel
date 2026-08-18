@@ -37,6 +37,13 @@ class UserRepository:
     def list_all(self) -> list[User]:
         return self.db.query(User).all()
 
+    def update_admin_role(self, user: User, is_admin: bool) -> User:
+        user.is_admin = is_admin
+        self.db.commit()
+        self.db.refresh(user)
+        return user
+
     def delete(self, user: User) -> None:
         self.db.delete(user)
         self.db.commit()
+

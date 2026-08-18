@@ -151,7 +151,13 @@ export async function adminDeleteDocument(documentId: string): Promise<void> {
   await api.delete(`/admin/documents/${documentId}`)
 }
 
+export async function adminToggleUserRole(userId: string): Promise<AdminUser> {
+  const { data } = await api.patch<AdminUser>(`/admin/users/${userId}/toggle-role`)
+  return data
+}
+
 export async function adminGetAnalytics(): Promise<AdminAnalytics> {
   const { data } = await api.get<AdminAnalytics>('/admin/analytics')
   return data
 }
+

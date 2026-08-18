@@ -60,6 +60,27 @@ class AdminService:
         self.history_repo.clear_for_user(user_id)
         self.user_repo.delete(user)
 
+    def toggle_admin_role(self, user_id: str, requesting_admin_id: str) -> AdminUserOut:
+        if user_id == requesting_admin_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="You cannot change your own admin role while logged in.",
+            )
+        user = self.user_repo.get_by_id(user_id)
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+        
+        updated_user = self.user_repo.update_admin_role(user, not user.is_admin)
+        return AdminUserOut(
+            id=updated_user.id,
+            email=updated_user.email,
+            full_name=updated_user.full_name,
+            is_active=updated_user.is_active,
+            is_admin=updated_user.is_admin,
+            document_count=self.doc_repo.count_for_user(updated_user.id),
+            question_count=self.history_repo.count_for_user(updated_user.id),
+        )
+
     def delete_any_document(self, document_id: str) -> None:
         """Admin document deletion bypasses the ownership check that the
         regular /document/{id} endpoint enforces."""

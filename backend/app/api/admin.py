@@ -42,6 +42,16 @@ def delete_user(
     service.delete_user(user_id, requesting_admin_id=current_admin.id)
 
 
+@router.patch("/users/{user_id}/toggle-role", response_model=AdminUserOut)
+def toggle_user_role(
+    user_id: str,
+    current_admin: User = Depends(get_current_admin),
+    service: AdminService = Depends(_get_service),
+):
+    """Toggle admin role for a user (promote / demote)."""
+    return service.toggle_admin_role(user_id, requesting_admin_id=current_admin.id)
+
+
 @router.delete("/documents/{document_id}", status_code=204)
 def delete_any_document(
     document_id: str,
