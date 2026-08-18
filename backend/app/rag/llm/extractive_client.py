@@ -8,35 +8,45 @@ It still uses the FAISS vector search to find the best matching chunks —
 it just skips the generative LLM step and returns the raw text.
 """
 
+import re
+
 from app.rag.llm.base import BaseLLMClient
 
 
 class ExtractiveClient(BaseLLMClient):
     """
     Returns the context chunks themselves as the answer.
-    Parses the user_prompt to extract the context and question,
-    then returns the most relevant snippet cleanly formatted.
+
+    The user_prompt produced by build_user_prompt() looks like:
+
+        Context excerpts:
+
+        [Excerpt 1 — filename.pdf, page 1]
+        <chunk text>
+
+        [Excerpt 2 — filename.pdf, page 2]
+        <chunk text>
+
+        Question: <question>
+
+        Answer:
+
+    This parser pulls out each excerpt block and returns the best one
+    as a cleanly formatted answer.
     """
 
     def generate(self, system_prompt: str, user_prompt: str) -> str:
-        # Extract the context blocks from the prompt
-        lines = user_prompt.splitlines()
-        context_lines = []
-        question = ""
-        in_context = False
+        # Separate context excerpts from the trailing Question/Answer section
+        qa_split = re.split(r"\n+Question:\s*", user_prompt, maxsplit=1)
+        context_part = qa_split[0]
 
-        for line in lines:
-            stripped = line.strip()
-            if stripped.startswith("Question:"):
-                question = stripped[len("Question:"):].strip()
-            elif stripped.startswith("[Source") or stripped.startswith("Source"):
-                in_context = True
-            elif in_context and stripped.startswith("Text:"):
-                context_lines.append(stripped[len("Text:"):].strip())
-            elif stripped == "---":
-                in_context = False
+        # Match excerpt blocks: [Excerpt N — doc, page P]\ntext
+        pattern = r"\[Excerpt\s+\d+\s+—\s+[^\]]+\]\n(.*?)(?=\n\[Excerpt|\Z)"
+        matches = re.findall(pattern, context_part, re.DOTALL)
 
-        if not context_lines:
+        excerpts = [m.strip() for m in matches if m.strip()]
+
+        if not excerpts:
             return (
                 "I could not find relevant information in your uploaded documents "
                 "to answer this question. Please upload a document that contains "
@@ -44,13 +54,12 @@ class ExtractiveClient(BaseLLMClient):
             )
 
         # Return the best (first = highest similarity) passage, cleanly formatted
-        best = context_lines[0]
+        best = excerpts[0]
         extra = ""
-        if len(context_lines) > 1:
-            extra = f"\n\n**Also relevant:**\n> {context_lines[1][:300]}{'...' if len(context_lines[1]) > 300 else ''}"
+        if len(excerpts) > 1:
+            snippet = excerpts[1][:300]
+            ellipsis = "..." if len(excerpts[1]) > 300 else ""
+            extra = f"\n\n**Also relevant:**\n\n> {snippet}{ellipsis}"
 
-        return (
-            f"Based on your documents:\n\n"
-            f"> {best}"
-            f"{extra}"
-        )
+        return f"Based on your uploaded documents:\n\n> {best}{extra}"
+
