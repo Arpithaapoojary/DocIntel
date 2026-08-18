@@ -1,9 +1,20 @@
 import type { InputHTMLAttributes, LabelHTMLAttributes, ReactNode } from 'react'
 
-export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
+export function Card({
+  children,
+  className = '',
+  hover = false,
+}: {
+  children: ReactNode
+  className?: string
+  hover?: boolean
+}) {
   return (
     <div
-      className={`rounded-lg border border-line bg-surface dark:border-line-dark dark:bg-surface-dark ${className}`}
+      className={`rounded-2xl border border-line/60 bg-surface shadow-card transition-all duration-300
+        dark:border-line-dark dark:bg-surface-dark dark:shadow-card-dark
+        ${hover ? 'hover:shadow-card-hover hover:-translate-y-0.5 dark:hover:shadow-card-dark-hover cursor-pointer' : ''}
+        ${className}`}
     >
       {children}
     </div>
@@ -13,9 +24,10 @@ export function Card({ children, className = '' }: { children: ReactNode; classN
 interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string
   error?: string
+  hint?: string
 }
 
-export function Field({ label, error, id, className = '', ...rest }: FieldProps) {
+export function Field({ label, error, hint, id, className = '', ...rest }: FieldProps) {
   const fieldId = id ?? label.toLowerCase().replace(/\s+/g, '-')
   return (
     <div className="flex flex-col gap-1.5">
@@ -24,12 +36,22 @@ export function Field({ label, error, id, className = '', ...rest }: FieldProps)
       </label>
       <input
         id={fieldId}
-        className={`rounded-md border border-line bg-paper px-3 py-2 font-body text-sm text-ink
-          placeholder:text-ink/40 focus:border-signal focus:outline-none focus:ring-1 focus:ring-signal
-          dark:border-line-dark dark:bg-paper-dark dark:text-ink-dark dark:placeholder:text-ink-dark/40 ${className}`}
+        className={`rounded-xl border border-line bg-paper px-4 py-2.5 font-body text-sm text-ink
+          placeholder:text-ink/35 transition-all duration-200
+          focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/20
+          dark:border-line-dark dark:bg-paper-dark dark:text-ink-dark dark:placeholder:text-ink-dark/35
+          dark:focus:border-primary/50 dark:focus:ring-primary/15
+          ${error ? 'border-danger focus:border-danger focus:ring-danger/20' : ''} ${className}`}
         {...rest}
       />
-      {error && <span className="font-body text-xs text-flag dark:text-flag-light">{error}</span>}
+      {hint && !error && (
+        <span className="font-body text-xs text-ink/50 dark:text-ink-dark/50">{hint}</span>
+      )}
+      {error && (
+        <span className="flex items-center gap-1 font-body text-xs text-danger dark:text-danger-dark">
+          {error}
+        </span>
+      )}
     </div>
   )
 }
@@ -50,14 +72,14 @@ export function Badge({
   tone?: 'neutral' | 'success' | 'warning' | 'danger'
 }) {
   const toneClasses: Record<string, string> = {
-    neutral: 'bg-line/50 text-ink/70 dark:bg-line-dark/50 dark:text-ink-dark/70',
-    success: 'bg-signal/10 text-signal dark:bg-signal-dark/15 dark:text-signal-dark',
-    warning: 'bg-flag/10 text-flag dark:bg-flag-light/15 dark:text-flag-light',
-    danger: 'bg-flag/15 text-flag dark:bg-flag-light/20 dark:text-flag-light',
+    neutral: 'bg-ink/8 text-ink/60 dark:bg-white/8 dark:text-ink-dark/60 border border-line/60 dark:border-line-dark',
+    success: 'bg-success/10 text-success border border-success/20 dark:bg-success-dark/15 dark:text-success-dark dark:border-success-dark/25',
+    warning: 'bg-warning/10 text-warning border border-warning/20 dark:bg-warning-dark/15 dark:text-warning-dark dark:border-warning-dark/25',
+    danger:  'bg-danger/10 text-danger border border-danger/20 dark:bg-danger-dark/15 dark:text-danger-dark dark:border-danger-dark/25',
   }
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide ${toneClasses[tone]}`}
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider font-medium ${toneClasses[tone]}`}
     >
       {children}
     </span>
@@ -65,7 +87,13 @@ export function Badge({
 }
 
 export function Skeleton({ className = '' }: { className?: string }) {
-  return <div className={`animate-pulse rounded-md bg-line/60 dark:bg-line-dark/60 ${className}`} />
+  return (
+    <div
+      className={`relative overflow-hidden rounded-xl bg-line/60 dark:bg-line-dark/60 ${className}`}
+    >
+      <div className="absolute inset-0 shimmer" />
+    </div>
+  )
 }
 
 export function EmptyState({
@@ -80,12 +108,18 @@ export function EmptyState({
   action?: ReactNode
 }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-line px-6 py-14 text-center dark:border-line-dark">
-      {icon && <div className="text-ink/30 dark:text-ink-dark/30">{icon}</div>}
+    <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-line/60 bg-primary/2 px-8 py-16 text-center dark:border-line-dark dark:bg-primary/5 animate-fade-in">
+      {icon && (
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-accent/10 text-primary dark:from-primary/20 dark:to-accent/15 dark:text-primary-300">
+          {icon}
+        </div>
+      )}
       <div>
-        <p className="font-display text-lg text-ink dark:text-ink-dark">{title}</p>
+        <p className="font-display text-lg font-semibold text-ink dark:text-ink-dark">{title}</p>
         {description && (
-          <p className="mt-1 font-body text-sm text-ink/60 dark:text-ink-dark/60">{description}</p>
+          <p className="mt-1.5 font-body text-sm text-ink/55 dark:text-ink-dark/55 max-w-xs mx-auto text-balance">
+            {description}
+          </p>
         )}
       </div>
       {action}

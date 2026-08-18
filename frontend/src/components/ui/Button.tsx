@@ -3,23 +3,36 @@ import { Loader2 } from 'lucide-react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'destructive'
-  size?: 'sm' | 'md'
+  size?: 'sm' | 'md' | 'lg'
   loading?: boolean
   children: ReactNode
 }
 
 const variantClasses: Record<string, string> = {
   primary:
-    'bg-signal text-white hover:bg-signal/90 dark:bg-signal-dark dark:text-paper-dark dark:hover:bg-signal-dark/90',
+    'bg-gradient-to-r from-primary to-primary-600 text-white shadow-glow-sm ' +
+    'hover:shadow-glow-primary hover:from-primary-600 hover:to-primary-700 ' +
+    'active:scale-[0.97] dark:from-primary dark:to-primary-600',
   secondary:
-    'border border-line bg-surface text-ink hover:bg-paper dark:border-line-dark dark:bg-surface-dark dark:text-ink-dark dark:hover:bg-paper-dark',
-  ghost: 'text-ink hover:bg-line/40 dark:text-ink-dark dark:hover:bg-line-dark/40',
-  destructive: 'bg-flag text-white hover:bg-flag/90 dark:bg-flag-light dark:hover:bg-flag-light/90',
+    'border border-line bg-surface text-ink ' +
+    'hover:border-primary/40 hover:bg-primary/5 hover:text-primary ' +
+    'dark:border-line-dark dark:bg-surface-dark dark:text-ink-dark ' +
+    'dark:hover:border-primary/40 dark:hover:bg-primary/8 dark:hover:text-primary-300 ' +
+    'active:scale-[0.97]',
+  ghost:
+    'text-ink/70 hover:bg-primary/8 hover:text-primary ' +
+    'dark:text-ink-dark/70 dark:hover:bg-primary/12 dark:hover:text-primary-300 ' +
+    'active:scale-[0.97]',
+  destructive:
+    'bg-gradient-to-r from-danger to-danger/80 text-white ' +
+    'hover:from-danger/90 hover:to-danger/70 shadow-sm active:scale-[0.97] ' +
+    'dark:from-danger-dark dark:to-danger-dark/80',
 }
 
 const sizeClasses: Record<string, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-sm',
+  sm: 'h-8 px-3 text-xs rounded-lg gap-1.5',
+  md: 'h-9 px-4 text-sm rounded-lg gap-2',
+  lg: 'h-11 px-6 text-sm rounded-xl gap-2',
 }
 
 export function Button({
@@ -34,12 +47,12 @@ export function Button({
   return (
     <button
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center gap-2 rounded-md font-body font-medium
-        transition-colors disabled:cursor-not-allowed disabled:opacity-50
+      className={`inline-flex items-center justify-center font-body font-medium
+        transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50
         ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
       {...rest}
     >
-      {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+      {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
       {children}
     </button>
   )
