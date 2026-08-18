@@ -4,6 +4,10 @@ Sentence-Transformers embedder — the real, production embedding backend.
 The model is loaded lazily on first use (not at import time) so that
 importing this module doesn't force a model download in contexts where
 it isn't needed (e.g. running unrelated tests).
+
+Fix: Load on CPU first to avoid the PyTorch meta-tensor error that
+occurs with newer sentence-transformers + older torch combinations
+when the device is passed directly to the constructor.
 """
 
 from app.rag.embeddings.base import BaseEmbedder
@@ -19,9 +23,22 @@ class SentenceTransformerEmbedder(BaseEmbedder):
             # Imported here, not at module level, so environments that never
             # touch the real embedder don't need torch/sentence-transformers
             # importable just to import this file.
+            import torch
             from sentence_transformers import SentenceTransformer
 
-            self._model = SentenceTransformer(self.model_name)
+            # Always load on CPU first — avoids the PyTorch meta-tensor error
+            # ("Cannot copy out of meta tensor; no data!") that happens when
+            # the device is passed directly to the SentenceTransformer
+            # constructor with certain torch/transformers version combinations.
+            self._model = SentenceTransformer(self.model_name, device="cpu")
+
+            # Move to GPU after loading if available
+            if torch.cuda.is_available():
+                try:
+                    self._model = self._model.to("cuda")
+                except Exception:
+                    pass  # Stay on CPU if GPU move fails
+
         return self._model
 
     def embed_texts(self, texts: list[str]) -> list[list[float]]:
