@@ -1,13 +1,20 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { Send, Trash2, Copy, RefreshCw, MessageSquareText, Filter, CheckCheck } from 'lucide-react'
+import { Send, Trash2, Copy, RefreshCw, MessageSquareText, Filter, CheckCheck, Zap, Sparkles } from 'lucide-react'
 import { askQuestion, clearHistory, extractErrorMessage, getHistory, listDocuments } from '../lib/api'
 import type { ChatMessageItem, DocumentItem } from '../types'
 import { Button } from '../components/ui/Button'
-import { EmptyState, Skeleton } from '../components/ui/primitives'
+import { Skeleton } from '../components/ui/primitives'
 import { CitationTabs } from '../components/CitationTabs'
 import { ConfidenceMeter } from '../components/ConfidenceMeter'
 import { MarkdownRenderer } from '../components/MarkdownRenderer'
 import { useToast } from '../contexts/ToastContext'
+
+const SAMPLE_PROMPTS = [
+  'What is the summary of this document?',
+  'What are the key policies and guidelines?',
+  'What are the financial metrics or revenue numbers?',
+  'Who are the key people or stakeholders?',
+]
 
 export function ChatPage() {
   const { notify } = useToast()
@@ -66,7 +73,6 @@ export function ChatPage() {
     submit(question)
   }
 
-  // Allow Shift+Enter for newline, Enter to submit
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -104,23 +110,23 @@ export function ChatPage() {
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col">
       {/* ── Header ── */}
-      <div className="flex flex-wrap items-center justify-between pb-5 gap-3">
+      <div className="flex flex-wrap items-center justify-between pb-5 gap-3 border-b border-line/40 dark:border-line-dark/40">
         <div>
           <h1 className="font-display text-2xl font-bold text-ink dark:text-ink-dark tracking-tight">
             Ask <span className="gradient-text">Anything</span>
           </h1>
           <p className="mt-1 font-body text-sm text-ink/55 dark:text-ink-dark/55">
-            Answers are grounded strictly in your uploaded documents.
+            Answers are grounded strictly in your verified uploaded documents.
           </p>
         </div>
         <div className="flex items-center gap-2">
           {availableDocs.length > 0 && (
-            <div className="flex items-center gap-2 rounded-xl border border-line/60 bg-surface px-3 py-2 text-xs dark:border-line-dark dark:bg-surface-dark shadow-sm">
-              <Filter className="h-3.5 w-3.5 text-primary/60" />
+            <div className="flex items-center gap-2 rounded-xl border border-line/60 bg-surface px-3 py-1.5 text-xs dark:border-line-dark dark:bg-surface-dark shadow-sm">
+              <Filter className="h-3.5 w-3.5 text-primary/70" />
               <select
                 value={selectedDocId}
                 onChange={(e) => setSelectedDocId(e.target.value)}
-                className="bg-transparent font-body text-sm text-ink/80 focus:outline-none cursor-pointer dark:text-ink-dark/80"
+                className="bg-transparent font-body text-xs text-ink/80 focus:outline-none cursor-pointer dark:text-ink-dark/80"
               >
                 <option value="">All Documents ({availableDocs.length})</option>
                 {availableDocs.map((doc) => (
@@ -145,28 +151,46 @@ export function ChatPage() {
       </div>
 
       {/* ── Messages ── */}
-      <div className="flex-1 overflow-y-auto pr-1 pb-2">
+      <div className="flex-1 overflow-y-auto pr-1 py-4">
         {loading ? (
           <div className="flex flex-col gap-5">
             {[1, 2].map((i) => (
               <div key={i} className="flex flex-col gap-3">
                 <div className="self-end">
-                  <Skeleton className="h-10 w-56" />
+                  <Skeleton className="h-10 w-56 rounded-2xl" />
                 </div>
-                <Skeleton className="h-28 w-4/5" />
+                <Skeleton className="h-28 w-4/5 rounded-2xl" />
               </div>
             ))}
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex h-full items-center justify-center">
-            <EmptyState
-              icon={<MessageSquareText className="h-7 w-7" />}
-              title="No questions yet"
-              description='Try asking something like "What does this document say about pricing?"'
-            />
+          <div className="flex h-full flex-col items-center justify-center text-center px-4">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 shadow-glow-sm dark:from-primary/20 dark:to-accent/15 mb-4 animate-fade-in">
+              <Sparkles className="h-8 w-8 text-primary dark:text-primary-300" />
+            </div>
+            <h2 className="font-display text-xl font-bold text-ink dark:text-ink-dark mb-1">
+              What would you like to know?
+            </h2>
+            <p className="font-body text-sm text-ink/50 dark:text-ink-dark/50 max-w-md mb-6">
+              Ask any question about your uploaded documents. Answers include source citations and confidence metrics.
+            </p>
+
+            {/* Quick Inspiration Pills */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-lg w-full">
+              {SAMPLE_PROMPTS.map((sample, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => submit(sample)}
+                  className="flex items-center gap-2.5 rounded-xl border border-line/60 bg-surface/80 p-3 text-left font-body text-xs text-ink/75 transition-all duration-200 hover:border-primary/40 hover:bg-primary/5 hover:text-primary hover:-translate-y-0.5 dark:border-line-dark dark:bg-surface-dark/80 dark:text-ink-dark/75 dark:hover:border-primary/40 dark:hover:bg-primary/10 dark:hover:text-primary-300 shadow-sm"
+                >
+                  <MessageSquareText className="h-3.5 w-3.5 shrink-0 text-primary/60" />
+                  <span>{sample}</span>
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
-          <div className="flex flex-col gap-7">
+          <div className="flex flex-col gap-6">
             {messages.map((m) => (
               <div key={m.id} className="flex flex-col gap-3 animate-fade-in-up">
                 {/* User bubble */}
@@ -177,8 +201,18 @@ export function ChatPage() {
                 </div>
 
                 {/* Assistant bubble */}
-                <div className="max-w-[88%]">
+                <div className="max-w-[90%]">
                   <div className="bubble-assistant">
+                    {/* Assistant Header Badge */}
+                    <div className="flex items-center gap-2 mb-3 pb-2 border-b border-line/40 dark:border-line-dark/40">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-primary to-accent shadow-sm">
+                        <Zap className="h-2.5 w-2.5 text-white" />
+                      </div>
+                      <span className="font-display text-xs font-semibold text-ink/70 dark:text-ink-dark/70">
+                        DocIntel AI
+                      </span>
+                    </div>
+
                     <MarkdownRenderer content={m.answer} />
 
                     {/* Footer: confidence + actions */}
@@ -215,7 +249,7 @@ export function ChatPage() {
 
             {/* Typing indicator */}
             {asking && (
-              <div className="max-w-[88%] animate-fade-in">
+              <div className="max-w-[90%] animate-fade-in">
                 <div className="bubble-assistant">
                   <div className="flex items-center gap-3 py-1">
                     <div className="flex gap-1.5">
@@ -223,8 +257,8 @@ export function ChatPage() {
                       <span className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />
                       <span className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
                     </div>
-                    <span className="font-body text-sm text-ink/50 dark:text-ink-dark/50">
-                      Searching documents…
+                    <span className="font-body text-xs text-ink/50 dark:text-ink-dark/50">
+                      Searching vector store & analyzing context…
                     </span>
                   </div>
                 </div>
@@ -236,10 +270,10 @@ export function ChatPage() {
       </div>
 
       {/* ── Input bar ── */}
-      <div className="pt-4">
+      <div className="pt-3">
         <form
           onSubmit={handleSubmit}
-          className="relative flex items-end gap-3 rounded-2xl border border-line/60 bg-surface p-3 shadow-card transition-all duration-200 focus-within:border-primary/40 focus-within:shadow-glow-sm dark:border-line-dark dark:bg-surface-dark dark:focus-within:border-primary/40"
+          className="relative flex items-end gap-3 rounded-2xl border border-line/60 bg-surface p-3 shadow-card transition-all duration-200 focus-within:border-primary/50 focus-within:shadow-glow-sm dark:border-line-dark dark:bg-surface-dark dark:focus-within:border-primary/50"
         >
           <textarea
             ref={inputRef}
@@ -247,7 +281,6 @@ export function ChatPage() {
             value={question}
             onChange={(e) => {
               setQuestion(e.target.value)
-              // Auto-grow: reset and then set to scrollHeight
               e.target.style.height = 'auto'
               e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px'
             }}
@@ -277,3 +310,4 @@ export function ChatPage() {
     </div>
   )
 }
+
