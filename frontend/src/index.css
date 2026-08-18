@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,13 +10,21 @@
   }
   body {
     @apply bg-paper text-ink font-body antialiased dark:bg-paper-dark dark:text-ink-dark;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
   h1, h2, h3 {
     @apply font-display;
   }
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-signal;
+    @apply outline-2 outline-offset-2 outline-primary;
   }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb { @apply rounded-full bg-line dark:bg-line-dark; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-primary/30 dark:bg-primary/40; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -25,11 +35,73 @@
 }
 
 @layer components {
-  /* Signature element: citation "index tab" chip, styled after a library
-     card-catalog tab. Used for every source citation across the app. */
+  /* ── Citation tab chip ─────────────────────────────────────────── */
   .citation-tab {
-    @apply inline-flex items-center gap-1.5 rounded-t-md rounded-br-md border border-signal/30
-           bg-signal/5 px-2.5 py-1 font-mono text-xs text-signal
-           dark:border-signal-dark/40 dark:bg-signal-dark/10 dark:text-signal-dark;
+    @apply inline-flex items-center gap-1.5 rounded-t-md rounded-br-md border border-primary/30
+           bg-primary/8 px-2.5 py-1 font-mono text-xs text-primary
+           dark:border-primary/40 dark:bg-primary/15 dark:text-primary-300;
   }
+
+  /* ── Glass card ────────────────────────────────────────────────── */
+  .glass-card {
+    @apply relative overflow-hidden rounded-xl
+           border border-white/20 bg-white/70 backdrop-blur-sm
+           shadow-glass dark:border-white/5 dark:bg-surface-dark/80
+           dark:shadow-glass-dark;
+  }
+
+  /* ── Gradient text ─────────────────────────────────────────────── */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  /* ── Glow ring on focus ────────────────────────────────────────── */
+  .glow-ring {
+    @apply ring-2 ring-primary/40 ring-offset-2 ring-offset-paper dark:ring-offset-paper-dark;
+  }
+
+  /* ── Shimmer skeleton ──────────────────────────────────────────── */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(108, 58, 255, 0.03) 25%,
+      rgba(108, 58, 255, 0.08) 50%,
+      rgba(108, 58, 255, 0.03) 75%
+    );
+    background-size: 200% 100%;
+    @apply animate-shimmer;
+  }
+
+  /* ── Nav link active glow ──────────────────────────────────────── */
+  .nav-active {
+    @apply bg-primary/10 text-primary shadow-glow-sm
+           dark:bg-primary/15 dark:text-primary-300;
+  }
+
+  /* ── Message bubble user ───────────────────────────────────────── */
+  .bubble-user {
+    @apply rounded-2xl rounded-br-sm bg-gradient-to-br from-primary to-primary-700
+           px-4 py-3 text-white shadow-glow-sm;
+  }
+
+  /* ── Message bubble assistant ──────────────────────────────────── */
+  .bubble-assistant {
+    @apply rounded-2xl rounded-bl-sm border border-line/60
+           bg-surface px-4 py-3.5 shadow-card
+           dark:border-line-dark dark:bg-surface-dark dark:shadow-card-dark;
+  }
+
+  /* ── Stat card icon ─────────────────────────────────────────────── */
+  .stat-icon {
+    @apply flex h-11 w-11 items-center justify-center rounded-xl
+           bg-gradient-to-br from-primary/20 to-accent/10
+           text-primary dark:from-primary/25 dark:to-accent/15 dark:text-primary-300;
+  }
+}
+
+@layer utilities {
+  .bg-primary\/8 { background-color: rgba(108, 58, 255, 0.08); }
+  .text-balance { text-wrap: balance; }
+  .animation-delay-150 { animation-delay: 150ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
 }
