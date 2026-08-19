@@ -1,26 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  html {
-    @apply scroll-smooth;
-  }
-  body {
-    @apply bg-paper text-ink font-body antialiased selection:bg-primary/20 selection:text-primary dark:bg-paper-dark dark:text-ink-dark;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-    -webkit-tap-highlight-color: transparent;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display tracking-tight text-ink dark:text-ink-dark;
-  }
-  :focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary;
+  *, ::before, ::after {
+    @apply border-slate-200 dark:border-slate-800;
   }
 
-  /* Sleek Modern Scrollbar */
+  html {
+    @apply scroll-smooth antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans dark:bg-slate-950 dark:text-slate-50;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight text-slate-900 dark:text-slate-100;
+  }
+
+  /* Accessible focus outline */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-600 ring-offset-2 ring-offset-white dark:ring-brand-500 dark:ring-offset-slate-950;
+  }
+
+  /* Minimal custom scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -29,59 +36,19 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-slate-300/70 hover:bg-slate-400/80 dark:bg-slate-700/60 dark:hover:bg-slate-600/80 transition-colors;
+    @apply rounded-full bg-slate-300 hover:bg-slate-400 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors;
   }
 }
 
 @layer components {
-  /* ── Interactive Citation Chip ─────────────────────────────────────────── */
-  .citation-tab {
-    @apply inline-flex items-center gap-2 rounded-xl border border-primary/20
-           bg-primary/5 px-3 py-2 font-mono text-xs text-primary transition-all duration-200
-           hover:border-primary/40 hover:bg-primary/10 hover:shadow-sm
-           dark:border-primary/30 dark:bg-primary/10 dark:text-primary-300 dark:hover:bg-primary/20;
+  /* Clean SaaS card */
+  .saas-card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-xs transition-colors dark:border-slate-800 dark:bg-slate-900;
   }
 
-  /* ── Modern Glass Card ────────────────────────────────────────────────── */
-  .glass-card {
-    @apply relative overflow-hidden rounded-2xl
-           border border-slate-200/80 bg-white/80 backdrop-blur-md
-           shadow-card transition-all duration-300 hover:shadow-card-hover
-           dark:border-slate-800/80 dark:bg-slate-900/80 dark:shadow-card-dark dark:hover:shadow-card-dark-hover;
-  }
-
-  /* ── Vibrant Gradient Text ─────────────────────────────────────────────── */
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent font-extrabold;
-  }
-
-  /* ── Shimmer skeleton ──────────────────────────────────────────────────── */
-  .shimmer {
-    background: linear-gradient(
-      90deg,
-      rgba(99, 102, 241, 0.03) 25%,
-      rgba(99, 102, 241, 0.09) 50%,
-      rgba(99, 102, 241, 0.03) 75%
-    );
-    background-size: 200% 100%;
-    @apply animate-shimmer;
-  }
-
-  /* ── Modern Chat Bubbles ───────────────────────────────────────────────── */
-  .bubble-user {
-    @apply rounded-2xl rounded-tr-sm bg-gradient-to-br from-primary-600 to-indigo-700
-           px-4 py-3 text-white shadow-md text-sm leading-relaxed;
-  }
-
-  .bubble-assistant {
-    @apply rounded-2xl rounded-tl-sm border border-slate-200/90
-           bg-white px-5 py-4 shadow-card transition-all duration-200
-           dark:border-slate-800/90 dark:bg-slate-900/90 dark:shadow-card-dark;
-  }
-
-  /* ── Icon containers ───────────────────────────────────────────────────── */
-  .brand-icon-box {
-    @apply flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-glow-sm text-white;
+  /* Interactive list item */
+  .saas-row {
+    @apply transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60;
   }
 }
 

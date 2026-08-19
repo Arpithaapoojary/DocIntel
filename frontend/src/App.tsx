@@ -13,11 +13,9 @@ import { AdminPage } from './pages/AdminPage'
 
 function LoadingScreen() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-paper dark:bg-paper-dark">
-      <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-600 to-accent text-white shadow-glow-sm animate-pulse">
-        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-      </div>
-      <span className="font-mono text-xs text-slate-400 dark:text-slate-500">Loading DocIntel…</span>
+    <div className="flex min-h-screen flex-col items-center justify-center gap-2.5 bg-slate-50 dark:bg-slate-950">
+      <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-300 border-t-slate-800 dark:border-slate-700 dark:border-t-slate-200" />
+      <span className="font-mono text-xs text-slate-500 dark:text-slate-400">Loading DocIntel…</span>
     </div>
   )
 }

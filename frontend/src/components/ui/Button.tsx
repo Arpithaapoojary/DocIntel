@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { Loader2 } from 'lucide-react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'destructive' | 'outline' | 'glow'
+  variant?: 'primary' | 'brand' | 'secondary' | 'ghost' | 'destructive' | 'outline' | 'glow'
   size?: 'xs' | 'sm' | 'md' | 'lg'
   loading?: boolean
   children: ReactNode
@@ -10,39 +10,34 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<string, string> = {
   primary:
-    'bg-gradient-to-r from-primary-600 to-indigo-600 text-white font-medium shadow-sm ' +
-    'hover:from-primary-500 hover:to-indigo-500 hover:shadow-glow-sm hover:-translate-y-0.5 ' +
-    'active:translate-y-0 active:scale-[0.98] dark:from-primary-600 dark:to-indigo-600',
+    'bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-950 ' +
+    'dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white dark:active:bg-slate-200 ' +
+    'shadow-xs font-medium',
+  brand:
+    'bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800 ' +
+    'dark:bg-brand-600 dark:hover:bg-brand-500 shadow-xs font-medium',
   glow:
-    'bg-gradient-to-r from-primary-600 via-indigo-600 to-accent-600 text-white font-semibold shadow-glow-primary ' +
-    'hover:brightness-110 hover:shadow-glow-primary hover:-translate-y-0.5 ' +
-    'active:translate-y-0 active:scale-[0.98]',
+    'bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800 ' +
+    'dark:bg-brand-600 dark:hover:bg-brand-500 shadow-xs font-medium',
   secondary:
-    'border border-slate-200 bg-white text-slate-700 font-medium shadow-card ' +
-    'hover:border-primary/40 hover:bg-slate-50 hover:text-primary hover:-translate-y-0.5 ' +
-    'dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 ' +
-    'dark:hover:border-primary/40 dark:hover:bg-slate-800 dark:hover:text-primary-300 ' +
-    'active:translate-y-0 active:scale-[0.98]',
+    'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 ' +
+    'dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:border-slate-700 ' +
+    'shadow-xs font-medium',
   outline:
-    'border border-slate-200 bg-transparent text-slate-700 font-medium ' +
-    'hover:border-slate-300 hover:bg-slate-100/70 ' +
-    'dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-800/70 ' +
-    'active:scale-[0.98]',
+    'border border-slate-200 bg-transparent text-slate-700 hover:bg-slate-100/80 ' +
+    'dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800/80 font-medium',
   ghost:
-    'text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 ' +
-    'dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-slate-100 ' +
-    'active:scale-[0.98]',
+    'text-slate-600 hover:bg-slate-100 hover:text-slate-900 ' +
+    'dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200 font-medium',
   destructive:
-    'bg-gradient-to-r from-red-600 to-rose-600 text-white font-medium shadow-sm ' +
-    'hover:from-red-500 hover:to-rose-500 hover:shadow-md hover:-translate-y-0.5 ' +
-    'active:translate-y-0 active:scale-[0.98]',
+    'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 shadow-xs font-medium',
 }
 
 const sizeClasses: Record<string, string> = {
-  xs: 'h-7 px-2.5 text-xs rounded-lg gap-1.5',
+  xs: 'h-7 px-2.5 text-xs rounded-md gap-1.5',
   sm: 'h-8 px-3 text-xs rounded-lg gap-1.5',
-  md: 'h-9 px-4 text-sm rounded-xl gap-2',
-  lg: 'h-11 px-5 text-sm rounded-xl gap-2.5 font-semibold',
+  md: 'h-9 px-3.5 text-sm rounded-lg gap-2',
+  lg: 'h-10 px-4 text-sm rounded-lg gap-2 font-medium',
 }
 
 export function Button({
@@ -57,9 +52,9 @@ export function Button({
   return (
     <button
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center font-body cursor-pointer
-        transition-all duration-200 select-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none
-        ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center justify-center font-sans cursor-pointer
+        transition-colors select-none disabled:cursor-not-allowed disabled:opacity-50
+        ${variantClasses[variant] || variantClasses.primary} ${sizeClasses[size]} ${className}`}
       {...rest}
     >
       {loading && <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />}
