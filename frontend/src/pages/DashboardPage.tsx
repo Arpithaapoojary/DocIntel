@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   FileStack, MessageSquare, HardDrive, Clock, ArrowRight,
-  Sparkles, Upload, Search, ShieldCheck, Zap
+  Upload, Search, ShieldCheck, Database
 } from 'lucide-react'
 import { getDashboard } from '../lib/api'
 import type { DashboardData } from '../types'
@@ -21,36 +21,24 @@ interface StatCardProps {
   icon: typeof FileStack
   label: string
   value: string
-  trend: string
-  gradient: string
-  delay?: string
+  secondary: string
 }
 
-function StatCard({ icon: Icon, label, value, trend, gradient, delay = '0ms' }: StatCardProps) {
+function StatCard({ icon: Icon, label, value, secondary }: StatCardProps) {
   return (
-    <div
-      className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 dark:border-slate-800/80 dark:bg-slate-900 dark:shadow-card-dark animate-fade-in-up"
-      style={{ animationDelay: delay }}
-    >
-      <div className={`pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full blur-2xl opacity-20 ${gradient}`} />
-
-      <div className="relative flex items-start justify-between">
-        <div>
-          <p className="font-mono text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-semibold">
-            {label}
-          </p>
-          <p className="mt-2 font-display text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-            {value}
-          </p>
-          <div className="mt-3 flex items-center gap-1.5 font-mono text-[11px] text-emerald-600 dark:text-emerald-400">
-            <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>{trend}</span>
-          </div>
-        </div>
-        <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} text-white shadow-sm`}>
-          <Icon className="h-5 w-5" />
-        </div>
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+      <div className="flex items-center justify-between">
+        <span className="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-medium">
+          {label}
+        </span>
+        <Icon className="h-4 w-4 text-slate-400 dark:text-slate-500" />
       </div>
+      <p className="mt-2 font-display text-2xl font-bold text-slate-900 dark:text-slate-100">
+        {value}
+      </p>
+      <p className="mt-1 font-mono text-[11px] text-slate-500 dark:text-slate-400">
+        {secondary}
+      </p>
     </div>
   )
 }
@@ -66,121 +54,105 @@ export function DashboardPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  const displayName = user?.full_name ? user.full_name.split(' ')[0] : 'Workspace Member'
+
   return (
-    <div className="flex flex-col gap-8">
-      {/* ── Top Hero Greeting Banner ── */}
-      <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-r from-primary-900 via-indigo-900 to-slate-900 p-8 text-white shadow-xl dark:border-slate-800 animate-fade-in-up">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-accent/20 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 right-1/4 h-48 w-48 rounded-full bg-primary/25 blur-2xl" />
+    <div className="flex flex-col gap-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5 dark:border-slate-800">
+        <div>
+          <h1 className="font-display text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
+            Welcome back, {displayName}
+          </h1>
+          <p className="mt-1 font-sans text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+            Document knowledge base and grounded vector assistant overview.
+          </p>
+        </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="max-w-xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur-sm border border-white/15 mb-3">
-              <Sparkles className="h-3.5 w-3.5 text-accent-300" />
-              <span>Grounded Document Intelligence Workspace</span>
-            </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-              Welcome back, {user?.full_name ? user.full_name.split(' ')[0] : 'Knowledge Master'} 👋
-            </h1>
-            <p className="mt-2 font-body text-sm leading-relaxed text-white/80">
-              Your documents are chunked and vector indexed with semantic embeddings. Ask questions or search passages with instant citations.
-            </p>
-          </div>
-
-          {/* Quick Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3">
-            <Link to="/documents">
-              <Button variant="glow" size="md" className="gap-2 shadow-lg">
-                <Upload className="h-4 w-4" />
-                Upload File
-              </Button>
-            </Link>
-            <Link to="/chat">
-              <Button variant="secondary" size="md" className="gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white dark:bg-white/10 dark:text-white">
-                <MessageSquare className="h-4 w-4" />
-                Ask Assistant
-              </Button>
-            </Link>
-          </div>
+        <div className="flex items-center gap-2.5">
+          <Link to="/documents">
+            <Button variant="secondary" size="sm" className="gap-1.5">
+              <Upload className="h-3.5 w-3.5" />
+              Upload Document
+            </Button>
+          </Link>
+          <Link to="/chat">
+            <Button variant="primary" size="sm" className="gap-1.5">
+              <MessageSquare className="h-3.5 w-3.5" />
+              Ask Assistant
+            </Button>
+          </Link>
         </div>
       </div>
 
-      {/* ── Metric Stat Cards ── */}
+      {/* Metric Stat Cards */}
       {loading || !data ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             icon={FileStack}
-            label="Total Documents"
+            label="Indexed Documents"
             value={String(data.total_documents)}
-            trend="100% Vector Indexed"
-            gradient="from-primary-600 to-indigo-600"
-            delay="0ms"
+            secondary="Vector chunked & embedded"
           />
           <StatCard
             icon={MessageSquare}
             label="Queries Answered"
             value={String(data.total_questions_asked)}
-            trend="Strict Citations"
-            gradient="from-accent-600 to-primary-600"
-            delay="50ms"
+            secondary="Grounded citations verified"
           />
           <StatCard
             icon={HardDrive}
-            label="Knowledge Stored"
+            label="Vault Storage"
             value={formatBytes(data.storage_used_bytes)}
-            trend="AES-256 Storage"
-            gradient="from-emerald-600 to-teal-600"
-            delay="100ms"
+            secondary="Local SQLite & Vector store"
           />
           <StatCard
-            icon={Zap}
-            label="AI Latency"
-            value="< 450ms"
-            trend="High-Speed Hybrid RAG"
-            gradient="from-amber-500 to-rose-500"
-            delay="150ms"
+            icon={Database}
+            label="RAG Architecture"
+            value="Hybrid Dense"
+            secondary="FAISS embeddings active"
           />
         </div>
       )}
 
-      {/* ── Two Column Activity Overview ── */}
+      {/* 2-Column Activity Feeds */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Documents Table / Cards */}
-        <div className="flex flex-col gap-4 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+        {/* Recent Documents Card */}
+        <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary-100 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
-                <FileStack className="h-4 w-4" />
-              </div>
-              <h2 className="font-display text-base font-bold text-slate-900 dark:text-slate-100">
+              <FileStack className="h-4 w-4 text-slate-500" />
+              <h2 className="font-display text-sm font-bold text-slate-900 dark:text-slate-100">
                 Recent Documents
               </h2>
             </div>
             <Link
               to="/documents"
-              className="flex items-center gap-1 font-body text-xs font-semibold text-primary hover:text-primary-600 dark:text-primary-400 transition-colors"
+              className="flex items-center gap-1 font-sans text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400"
             >
               View all ({data?.total_documents ?? 0}) <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
 
-          <div className="rounded-2xl border border-slate-200/80 bg-white shadow-card dark:border-slate-800/80 dark:bg-slate-900 overflow-hidden">
+          <div className="rounded-xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
             {loading || !data ? (
-              <div className="flex flex-col gap-3 p-4">
-                {[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 rounded-xl" />)}
+              <div className="flex flex-col gap-2.5 p-4">
+                {[1, 2, 3].map((i) => <Skeleton key={i} className="h-10 rounded-lg" />)}
               </div>
             ) : data.recent_documents.length === 0 ? (
               <div className="p-8 text-center">
-                <p className="font-body text-sm text-slate-500 dark:text-slate-400">
-                  No documents in your vault yet.
+                <p className="font-sans text-xs text-slate-500 dark:text-slate-400">
+                  No documents uploaded to this workspace yet.
                 </p>
                 <Link to="/documents" className="mt-3 inline-block">
-                  <Button size="sm" variant="secondary">
-                    Upload your first document
+                  <Button size="xs" variant="secondary">
+                    Upload your first file
                   </Button>
                 </Link>
               </div>
@@ -189,22 +161,22 @@ export function DashboardPage() {
                 {data.recent_documents.map((doc) => (
                   <li
                     key={doc.id}
-                    className="flex items-center justify-between gap-3 px-5 py-3.5 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors"
+                    className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                   >
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                        <FileStack className="h-4 w-4" />
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">
+                        <FileStack className="h-3.5 w-3.5" />
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate font-body text-sm font-semibold text-slate-900 dark:text-slate-100">
+                        <p className="truncate font-sans text-xs font-semibold text-slate-900 dark:text-slate-100">
                           {doc.original_filename}
                         </p>
-                        <p className="font-mono text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                        <p className="font-mono text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
                           {doc.page_count} {doc.page_count === 1 ? 'page' : 'pages'} · {doc.chunk_count} chunks
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                       <Badge
                         tone={doc.status === 'ready' ? 'success' : doc.status === 'failed' ? 'danger' : 'neutral'}
                         dot={doc.status === 'ready'}
@@ -213,10 +185,10 @@ export function DashboardPage() {
                       </Badge>
                       <Link
                         to="/chat"
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-950 dark:hover:text-primary-300 transition-colors"
+                        className="rounded p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
                         title="Ask about this document"
                       >
-                        <MessageSquare className="h-4 w-4" />
+                        <MessageSquare className="h-3.5 w-3.5" />
                       </Link>
                     </div>
                   </li>
@@ -226,38 +198,36 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Recent AI Questions Stream */}
-        <div className="flex flex-col gap-4 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
+        {/* Recent Inquiries Card */}
+        <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-100 text-accent-700 dark:bg-accent-950 dark:text-accent-300">
-                <Clock className="h-4 w-4" />
-              </div>
-              <h2 className="font-display text-base font-bold text-slate-900 dark:text-slate-100">
-                Recent AI Questions
+              <Clock className="h-4 w-4 text-slate-500" />
+              <h2 className="font-display text-sm font-bold text-slate-900 dark:text-slate-100">
+                Recent Inquiries
               </h2>
             </div>
             <Link
               to="/chat"
-              className="flex items-center gap-1 font-body text-xs font-semibold text-primary hover:text-primary-600 dark:text-primary-400 transition-colors"
+              className="flex items-center gap-1 font-sans text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400"
             >
-              Open chat <ArrowRight className="h-3 w-3" />
+              Open assistant <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
 
-          <div className="rounded-2xl border border-slate-200/80 bg-white shadow-card dark:border-slate-800/80 dark:bg-slate-900 overflow-hidden">
+          <div className="rounded-xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
             {loading || !data ? (
-              <div className="flex flex-col gap-3 p-4">
-                {[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 rounded-xl" />)}
+              <div className="flex flex-col gap-2.5 p-4">
+                {[1, 2, 3].map((i) => <Skeleton key={i} className="h-10 rounded-lg" />)}
               </div>
             ) : data.recent_questions.length === 0 ? (
               <div className="p-8 text-center">
-                <p className="font-body text-sm text-slate-500 dark:text-slate-400">
+                <p className="font-sans text-xs text-slate-500 dark:text-slate-400">
                   No questions asked yet.
                 </p>
                 <Link to="/chat" className="mt-3 inline-block">
-                  <Button size="sm" variant="secondary">
-                    Ask your first question
+                  <Button size="xs" variant="secondary">
+                    Start a conversation
                   </Button>
                 </Link>
               </div>
@@ -266,10 +236,10 @@ export function DashboardPage() {
                 {data.recent_questions.map((q) => (
                   <li
                     key={q.id}
-                    className="flex flex-col gap-2.5 px-5 py-3.5 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors"
+                    className="flex flex-col gap-2 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <span className="font-body text-sm font-semibold text-slate-900 dark:text-slate-100 line-clamp-1">
+                      <span className="font-sans text-xs font-medium text-slate-900 dark:text-slate-100 line-clamp-1">
                         "{q.question}"
                       </span>
                     </div>
@@ -277,7 +247,7 @@ export function DashboardPage() {
                       <ConfidenceMeter value={q.confidence} />
                       <Link
                         to="/chat"
-                        className="font-body text-xs font-medium text-primary hover:underline dark:text-primary-400"
+                        className="font-sans text-xs font-medium text-brand-600 hover:underline dark:text-brand-400"
                       >
                         Resume →
                       </Link>
@@ -290,41 +260,35 @@ export function DashboardPage() {
         </div>
       </div>
 
-      {/* ── Enterprise Workflow Feature Strip ── */}
+      {/* Production Architecture Strip */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 dark:border-slate-800/80 dark:bg-slate-900/60 shadow-xs">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary-100 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
-              <Upload className="h-4 w-4" />
-            </div>
-            <h3 className="font-display text-sm font-bold text-slate-900 dark:text-slate-100">1. Instant Ingestion</h3>
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+          <div className="flex items-center gap-2 mb-1.5">
+            <Upload className="h-4 w-4 text-slate-500" />
+            <h3 className="font-display text-xs font-bold text-slate-900 dark:text-slate-100">1. Document Parsing</h3>
           </div>
-          <p className="font-body text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            Upload PDFs, DOCX, and TXT files. Pages are automatically parsed, cleaned, and split into semantic chunks.
+          <p className="font-sans text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            PDF, DOCX, and TXT files are processed, cleaned, and partitioned into semantically coherent vector chunks.
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 dark:border-slate-800/80 dark:bg-slate-900/60 shadow-xs">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent-100 text-accent-700 dark:bg-accent-950 dark:text-accent-300">
-              <Search className="h-4 w-4" />
-            </div>
-            <h3 className="font-display text-sm font-bold text-slate-900 dark:text-slate-100">2. Vector Search</h3>
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+          <div className="flex items-center gap-2 mb-1.5">
+            <Search className="h-4 w-4 text-slate-500" />
+            <h3 className="font-display text-xs font-bold text-slate-900 dark:text-slate-100">2. Vector Search</h3>
           </div>
-          <p className="font-body text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            High-dimensional vector embeddings retrieve the top relevant passages with hybrid keyword + semantic scoring.
+          <p className="font-sans text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            High-dimensional embeddings index chunks for dense semantic similarity retrieval and exact keyword filtering.
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 dark:border-slate-800/80 dark:bg-slate-900/60 shadow-xs">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-              <ShieldCheck className="h-4 w-4" />
-            </div>
-            <h3 className="font-display text-sm font-bold text-slate-900 dark:text-slate-100">3. Grounded Synthesis</h3>
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+          <div className="flex items-center gap-2 mb-1.5">
+            <ShieldCheck className="h-4 w-4 text-slate-500" />
+            <h3 className="font-display text-xs font-bold text-slate-900 dark:text-slate-100">3. Grounded Synthesis</h3>
           </div>
-          <p className="font-body text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            LLM synthesizes direct answers strictly based on retrieved context, appending page citations and confidence scores.
+          <p className="font-sans text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            LLM synthesizes responses constrained strictly by retrieved passage context with verified page citations.
           </p>
         </div>
       </div>
