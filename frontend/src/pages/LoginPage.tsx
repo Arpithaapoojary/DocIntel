@@ -1,16 +1,16 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Zap, Lock, ArrowRight, Eye, EyeOff, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react'
+import { Lock, ArrowRight, Eye, EyeOff, Layers, CheckCircle2, ShieldCheck } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Field } from '../components/ui/primitives'
 import { Button } from '../components/ui/Button'
 import { extractErrorMessage } from '../lib/api'
 
 const HIGHLIGHTS = [
-  'Automatic vector chunking and semantic embeddings',
-  'Multi-document grounded Q&A with direct citations',
+  'Automatic vector chunking and dense semantic embeddings',
+  'Multi-document grounded Q&A with verifiable page citations',
   'Hybrid semantic similarity and exact keyword search',
-  'Enterprise-grade tenant data isolation',
+  'Isolated tenant repository and local SQLite vector storage',
 ]
 
 export function LoginPage() {
@@ -37,85 +37,71 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-paper dark:bg-paper-dark">
-      {/* ── Left Hero Branding Panel ── */}
-      <div className="relative hidden lg:flex lg:w-[48%] flex-col justify-between overflow-hidden bg-gradient-to-br from-primary-950 via-slate-950 to-indigo-950 p-12 text-white">
-        {/* Ambient mesh glows */}
-        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-primary-500/20 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 -left-20 h-80 w-80 rounded-full bg-accent-500/20 blur-3xl" />
-
-        {/* Brand Logo */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 via-indigo-500 to-accent text-white shadow-glow-primary">
-            <Sparkles className="h-5 w-5" />
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Left Feature Panel */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between border-r border-slate-200 bg-white p-12 dark:border-slate-800 dark:bg-slate-900">
+        {/* Brand */}
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white dark:bg-brand-600">
+            <Layers className="h-4 w-4" />
           </div>
-          <div>
-            <span className="font-display text-xl font-bold tracking-tight text-white">
-              DocIntel
-            </span>
-            <span className="ml-2 rounded-md bg-white/10 px-2 py-0.5 font-mono text-[10px] font-bold text-accent-300">
-              ENTERPRISE
-            </span>
-          </div>
+          <span className="font-display text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            DocIntel
+          </span>
+          <span className="rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+            Platform
+          </span>
         </div>
 
-        {/* Headline & Value Props */}
-        <div className="relative z-10 my-auto py-12">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 font-mono text-xs font-medium text-accent-300 border border-white/10 mb-4">
-            <Zap className="h-3.5 w-3.5" />
-            <span>AI Document Intelligence & Knowledge RAG</span>
-          </div>
-
-          <h2 className="font-display text-4xl font-extrabold leading-tight text-white tracking-tight">
-            Turn your static files into an interactive intelligence engine.
+        {/* Value Props */}
+        <div className="my-auto py-12 max-w-md">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            Grounded intelligence for your document repository.
           </h2>
-
-          <p className="mt-4 font-body text-sm leading-relaxed text-slate-300 max-w-md">
-            Query across hundreds of pages in milliseconds. Every answer is synthesized strictly from your documents with page citations.
+          <p className="mt-3 font-sans text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+            Extract insights and synthesize answers across hundreds of pages with verified source citations and zero hallucinations.
           </p>
 
-          <ul className="mt-8 flex flex-col gap-3.5">
+          <ul className="mt-8 flex flex-col gap-3">
             {HIGHLIGHTS.map((h, i) => (
-              <li key={i} className="flex items-center gap-3 font-body text-xs font-medium text-slate-200">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                </span>
+              <li key={i} className="flex items-center gap-2.5 font-sans text-xs text-slate-700 dark:text-slate-300">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-brand-600 dark:text-brand-400" />
                 <span>{h}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Bottom Trust Badge */}
-        <div className="relative z-10 flex items-center gap-2 font-mono text-[11px] text-slate-400 border-t border-white/10 pt-6">
-          <ShieldCheck className="h-4 w-4 text-accent-400" />
-          <span>Vector Embeddings · Strict Grounding · Zero Hallucination Design</span>
+        {/* Footer info */}
+        <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-4">
+          <ShieldCheck className="h-3.5 w-3.5" />
+          <span>Local Embeddings · Tenant Isolation · AES Protection</span>
         </div>
       </div>
 
-      {/* ── Right Auth Form Panel ── */}
-      <div className="flex flex-1 items-center justify-center px-6 py-12 sm:px-12">
-        <div className="w-full max-w-md animate-fade-in-up">
-          {/* Mobile Logo */}
-          <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-600 to-accent text-white shadow-glow-sm">
-              <Sparkles className="h-5 w-5" />
+      {/* Right Login Form */}
+      <div className="flex flex-1 items-center justify-center p-6 sm:p-12">
+        <div className="w-full max-w-sm">
+          {/* Mobile Brand */}
+          <div className="mb-6 flex items-center gap-2.5 lg:hidden">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white dark:bg-brand-600">
+              <Layers className="h-4 w-4" />
             </div>
-            <span className="font-display text-xl font-bold text-slate-900 dark:text-slate-100">
+            <span className="font-display text-base font-bold text-slate-900 dark:text-slate-100">
               DocIntel
             </span>
           </div>
 
-          <div className="mb-8">
-            <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-              Welcome back
+          <div className="mb-6">
+            <h1 className="font-display text-xl font-bold text-slate-900 dark:text-slate-100">
+              Sign in to your account
             </h1>
-            <p className="mt-1.5 font-body text-sm text-slate-500 dark:text-slate-400">
-              Sign in to your DocIntel knowledge workspace.
+            <p className="mt-1 font-sans text-xs text-slate-500 dark:text-slate-400">
+              Enter your credentials to access the workspace.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
             <Field
               label="Email Address"
               type="email"
@@ -123,7 +109,7 @@ export function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
-              placeholder="you@company.com"
+              placeholder="name@company.com"
             />
 
             <Field
@@ -146,25 +132,25 @@ export function LoginPage() {
             />
 
             {error && (
-              <div className="flex items-center gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-950/40">
-                <Lock className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
-                <p className="font-body text-xs font-medium text-red-600 dark:text-red-300">{error}</p>
+              <div className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-2.5 dark:border-rose-900/50 dark:bg-rose-950/40">
+                <Lock className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                <p className="font-sans text-xs font-medium text-rose-600 dark:text-rose-300">{error}</p>
               </div>
             )}
 
-            <Button type="submit" size="lg" variant="glow" loading={loading} className="mt-2 w-full justify-center">
-              Sign in to Workspace
-              <ArrowRight className="h-4 w-4" />
+            <Button type="submit" size="md" variant="primary" loading={loading} className="mt-1 w-full justify-center">
+              Sign in
+              <ArrowRight className="h-3.5 w-3.5 ml-1" />
             </Button>
           </form>
 
-          <p className="mt-8 text-center font-body text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-6 text-center font-sans text-xs text-slate-500 dark:text-slate-400">
             Don't have an account?{' '}
             <Link
               to="/register"
-              className="font-bold text-primary-600 hover:underline dark:text-primary-400"
+              className="font-semibold text-brand-600 hover:underline dark:text-brand-400"
             >
-              Create free account
+              Sign up
             </Link>
           </p>
         </div>
