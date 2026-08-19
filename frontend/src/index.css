@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -9,99 +9,84 @@
     @apply scroll-smooth;
   }
   body {
-    @apply bg-paper text-ink font-body antialiased dark:bg-paper-dark dark:text-ink-dark;
+    @apply bg-paper text-ink font-body antialiased selection:bg-primary/20 selection:text-primary dark:bg-paper-dark dark:text-ink-dark;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-tap-highlight-color: transparent;
   }
-  h1, h2, h3 {
-    @apply font-display;
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight text-ink dark:text-ink-dark;
   }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-primary;
   }
 
-  /* Custom scrollbar */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { @apply bg-transparent; }
-  ::-webkit-scrollbar-thumb { @apply rounded-full bg-line dark:bg-line-dark; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-primary/30 dark:bg-primary/40; }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
+  /* Sleek Modern Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-slate-300/70 hover:bg-slate-400/80 dark:bg-slate-700/60 dark:hover:bg-slate-600/80 transition-colors;
   }
 }
 
 @layer components {
-  /* ── Citation tab chip ─────────────────────────────────────────── */
+  /* ── Interactive Citation Chip ─────────────────────────────────────────── */
   .citation-tab {
-    @apply inline-flex items-center gap-1.5 rounded-t-md rounded-br-md border border-primary/30
-           bg-primary/8 px-2.5 py-1 font-mono text-xs text-primary
-           dark:border-primary/40 dark:bg-primary/15 dark:text-primary-300;
+    @apply inline-flex items-center gap-2 rounded-xl border border-primary/20
+           bg-primary/5 px-3 py-2 font-mono text-xs text-primary transition-all duration-200
+           hover:border-primary/40 hover:bg-primary/10 hover:shadow-sm
+           dark:border-primary/30 dark:bg-primary/10 dark:text-primary-300 dark:hover:bg-primary/20;
   }
 
-  /* ── Glass card ────────────────────────────────────────────────── */
+  /* ── Modern Glass Card ────────────────────────────────────────────────── */
   .glass-card {
-    @apply relative overflow-hidden rounded-xl
-           border border-white/20 bg-white/70 backdrop-blur-sm
-           shadow-glass dark:border-white/5 dark:bg-surface-dark/80
-           dark:shadow-glass-dark;
+    @apply relative overflow-hidden rounded-2xl
+           border border-slate-200/80 bg-white/80 backdrop-blur-md
+           shadow-card transition-all duration-300 hover:shadow-card-hover
+           dark:border-slate-800/80 dark:bg-slate-900/80 dark:shadow-card-dark dark:hover:shadow-card-dark-hover;
   }
 
-  /* ── Gradient text ─────────────────────────────────────────────── */
+  /* ── Vibrant Gradient Text ─────────────────────────────────────────────── */
   .gradient-text {
-    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent font-extrabold;
   }
 
-  /* ── Glow ring on focus ────────────────────────────────────────── */
-  .glow-ring {
-    @apply ring-2 ring-primary/40 ring-offset-2 ring-offset-paper dark:ring-offset-paper-dark;
-  }
-
-  /* ── Shimmer skeleton ──────────────────────────────────────────── */
+  /* ── Shimmer skeleton ──────────────────────────────────────────────────── */
   .shimmer {
     background: linear-gradient(
       90deg,
-      rgba(108, 58, 255, 0.03) 25%,
-      rgba(108, 58, 255, 0.08) 50%,
-      rgba(108, 58, 255, 0.03) 75%
+      rgba(99, 102, 241, 0.03) 25%,
+      rgba(99, 102, 241, 0.09) 50%,
+      rgba(99, 102, 241, 0.03) 75%
     );
     background-size: 200% 100%;
     @apply animate-shimmer;
   }
 
-  /* ── Nav link active glow ──────────────────────────────────────── */
-  .nav-active {
-    @apply bg-primary/10 text-primary shadow-glow-sm
-           dark:bg-primary/15 dark:text-primary-300;
-  }
-
-  /* ── Message bubble user ───────────────────────────────────────── */
+  /* ── Modern Chat Bubbles ───────────────────────────────────────────────── */
   .bubble-user {
-    @apply rounded-2xl rounded-br-sm bg-gradient-to-br from-primary to-primary-700
-           px-4 py-3 text-white shadow-glow-sm;
+    @apply rounded-2xl rounded-tr-sm bg-gradient-to-br from-primary-600 to-indigo-700
+           px-4 py-3 text-white shadow-md text-sm leading-relaxed;
   }
 
-  /* ── Message bubble assistant ──────────────────────────────────── */
   .bubble-assistant {
-    @apply rounded-2xl rounded-bl-sm border border-line/60
-           bg-surface px-4 py-3.5 shadow-card
-           dark:border-line-dark dark:bg-surface-dark dark:shadow-card-dark;
+    @apply rounded-2xl rounded-tl-sm border border-slate-200/90
+           bg-white px-5 py-4 shadow-card transition-all duration-200
+           dark:border-slate-800/90 dark:bg-slate-900/90 dark:shadow-card-dark;
   }
 
-  /* ── Stat card icon ─────────────────────────────────────────────── */
-  .stat-icon {
-    @apply flex h-11 w-11 items-center justify-center rounded-xl
-           bg-gradient-to-br from-primary/20 to-accent/10
-           text-primary dark:from-primary/25 dark:to-accent/15 dark:text-primary-300;
+  /* ── Icon containers ───────────────────────────────────────────────────── */
+  .brand-icon-box {
+    @apply flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-glow-sm text-white;
   }
 }
 
 @layer utilities {
-  .bg-primary\/8 { background-color: rgba(108, 58, 255, 0.08); }
-  .text-balance { text-wrap: balance; }
-  .animation-delay-150 { animation-delay: 150ms; }
-  .animation-delay-300 { animation-delay: 300ms; }
+  .text-balance {
+    text-wrap: balance;
+  }
 }

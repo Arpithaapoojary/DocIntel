@@ -31,28 +31,34 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ notify }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+      <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none">
         {toasts.map((t) => (
           <div
             key={t.id}
             role="status"
-            className={`flex items-center gap-2 rounded-md border px-3.5 py-2.5 pr-2 shadow-lg font-body text-sm
+            className={`pointer-events-auto flex items-center gap-3 rounded-2xl border px-4 py-3 shadow-xl backdrop-blur-md font-body text-xs font-medium animate-fade-in-up transition-all
               ${
                 t.variant === 'success'
-                  ? 'border-signal/30 bg-surface text-ink dark:border-signal-dark/40 dark:bg-surface-dark dark:text-ink-dark'
-                  : 'border-flag/30 bg-surface text-ink dark:border-flag-light/40 dark:bg-surface-dark dark:text-ink-dark'
+                  ? 'border-emerald-200/80 bg-white/95 text-slate-800 dark:border-emerald-800/80 dark:bg-slate-900/95 dark:text-slate-100 shadow-emerald-500/5'
+                  : 'border-rose-200/80 bg-white/95 text-slate-800 dark:border-rose-800/80 dark:bg-slate-900/95 dark:text-slate-100 shadow-rose-500/5'
               }`}
           >
-            {t.variant === 'success' ? (
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-signal dark:text-signal-dark" />
-            ) : (
-              <XCircle className="h-4 w-4 shrink-0 text-flag dark:text-flag-light" />
-            )}
-            <span>{t.message}</span>
+            <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${
+              t.variant === 'success'
+                ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400'
+                : 'bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400'
+            }`}>
+              {t.variant === 'success' ? (
+                <CheckCircle2 className="h-3.5 w-3.5" />
+              ) : (
+                <XCircle className="h-3.5 w-3.5" />
+              )}
+            </div>
+            <span className="flex-1 leading-snug">{t.message}</span>
             <button
               onClick={() => dismiss(t.id)}
               aria-label="Dismiss notification"
-              className="ml-1 rounded p-1 text-ink/40 hover:bg-line/50 hover:text-ink dark:text-ink-dark/40 dark:hover:bg-line-dark/50"
+              className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-300 transition-colors"
             >
               <X className="h-3.5 w-3.5" />
             </button>
