@@ -26,11 +26,14 @@ class SentenceTransformerEmbedder(BaseEmbedder):
             import torch
             from sentence_transformers import SentenceTransformer
 
-            # Always load on CPU first — avoids the PyTorch meta-tensor error
+            # Always load with low_cpu_mem_usage=False — avoids the PyTorch meta-tensor error
             # ("Cannot copy out of meta tensor; no data!") that happens when
-            # the device is passed directly to the SentenceTransformer
-            # constructor with certain torch/transformers version combinations.
-            self._model = SentenceTransformer(self.model_name, device="cpu")
+            # accelerate initializes meta tensors with certain torch/transformers version combinations.
+            self._model = SentenceTransformer(
+                self.model_name,
+                device="cpu",
+                model_kwargs={"low_cpu_mem_usage": False},
+            )
 
             # Move to GPU after loading if available
             if torch.cuda.is_available():
