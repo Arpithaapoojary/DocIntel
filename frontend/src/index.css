@@ -24,7 +24,8 @@
 
   /* Accessible focus outline */
   :focus-visible {
-    @apply outline-none ring-2 ring-brand-600 ring-offset-2 ring-offset-white dark:ring-brand-500 dark:ring-offset-slate-950;
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
   }
 
   /* Minimal custom scrollbar */
