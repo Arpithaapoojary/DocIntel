@@ -35,9 +35,9 @@ const variantClasses: Record<string, string> = {
 
 const sizeClasses: Record<string, string> = {
   xs: 'h-7 px-2.5 text-xs rounded-md gap-1.5',
-  sm: 'h-8 px-3 text-xs rounded-lg gap-1.5',
-  md: 'h-9 px-3.5 text-sm rounded-lg gap-2',
-  lg: 'h-10 px-4 text-sm rounded-lg gap-2 font-medium',
+  sm: 'h-8 px-3 text-xs sm:text-sm rounded-lg gap-1.5',
+  md: 'h-9.5 px-3.5 text-sm rounded-lg gap-2',
+  lg: 'h-11 px-5 text-sm sm:text-base rounded-lg gap-2.5 font-medium',
 }
 
 export function Button({
@@ -57,7 +57,7 @@ export function Button({
         ${variantClasses[variant] || variantClasses.primary} ${sizeClasses[size]} ${className}`}
       {...rest}
     >
-      {loading && <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />}
+      {loading && <Loader2 className="h-4 w-4 animate-spin shrink-0" />}
       {children}
     </button>
   )

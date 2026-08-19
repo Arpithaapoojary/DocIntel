@@ -19,17 +19,17 @@ export function CitationTabs({ sources }: { sources: SourceOut[] }) {
   }
 
   return (
-    <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-800">
-      <div className="flex items-center justify-between mb-2">
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-          Sources ({sources.length})
+    <div className="mt-4 pt-3.5 border-t border-slate-200 dark:border-slate-800">
+      <div className="flex items-center justify-between mb-2.5">
+        <span className="font-mono text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          Referenced Sources ({sources.length})
         </span>
-        <span className="font-sans text-[11px] text-slate-400 dark:text-slate-500">
+        <span className="font-sans text-xs text-slate-400 dark:text-slate-500">
           Click passage to expand
         </span>
       </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         {sources.map((s, i) => {
           const isExpanded = expandedIndex === i
           return (
@@ -39,38 +39,38 @@ export function CitationTabs({ sources }: { sources: SourceOut[] }) {
               className={`rounded-lg border text-left transition-colors cursor-pointer ${
                 isExpanded
                   ? 'border-brand-300 bg-brand-50/40 dark:border-brand-800 dark:bg-brand-950/20'
-                  : 'border-slate-200 bg-slate-50/60 hover:bg-slate-100/70 dark:border-slate-800 dark:bg-slate-950/40 dark:hover:bg-slate-900'
+                  : 'border-slate-200 bg-slate-50/70 hover:bg-slate-100/70 dark:border-slate-800 dark:bg-slate-950/50 dark:hover:bg-slate-900'
               }`}
             >
               {/* Header row */}
-              <div className="flex items-center justify-between p-2 gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <FileText className="h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500" />
-                  <span className="truncate font-sans text-xs font-medium text-slate-800 dark:text-slate-200">
+              <div className="flex items-center justify-between p-2.5 gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <FileText className="h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500" />
+                  <span className="truncate font-sans text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200">
                     {s.document_name}
                   </span>
-                  <span className="shrink-0 rounded bg-slate-200/80 px-1.5 py-0.2 font-mono text-[10px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                    p. {s.page}
+                  <span className="shrink-0 rounded bg-slate-200/80 px-2 py-0.5 font-mono text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                    Page {s.page}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1 shrink-0">
+                <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     onClick={(e) => handleCopySnippet(s.snippet, i, e)}
                     title="Copy passage snippet"
-                    className="flex h-5 w-5 items-center justify-center rounded text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-colors"
+                    className="flex h-6 w-6 items-center justify-center rounded text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-colors"
                   >
                     {copiedIndex === i ? (
-                      <Check className="h-3 w-3 text-emerald-600" />
+                      <Check className="h-3.5 w-3.5 text-emerald-600" />
                     ) : (
-                      <Copy className="h-3 w-3" />
+                      <Copy className="h-3.5 w-3.5" />
                     )}
                   </button>
                   <div className="text-slate-400">
                     {isExpanded ? (
-                      <ChevronUp className="h-3.5 w-3.5" />
+                      <ChevronUp className="h-4 w-4" />
                     ) : (
-                      <ChevronDown className="h-3.5 w-3.5" />
+                      <ChevronDown className="h-4 w-4" />
                     )}
                   </div>
                 </div>
@@ -78,9 +78,9 @@ export function CitationTabs({ sources }: { sources: SourceOut[] }) {
 
               {/* Expandable Passage Snippet */}
               {isExpanded && (
-                <div className="px-2.5 pb-2.5 pt-0.5">
-                  <div className="rounded border border-slate-200 bg-white p-2.5 dark:border-slate-800 dark:bg-slate-900">
-                    <p className="font-sans text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                <div className="px-3 pb-3 pt-0.5">
+                  <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+                    <p className="font-sans text-xs sm:text-sm leading-relaxed text-slate-700 dark:text-slate-300">
                       "{s.snippet}"
                     </p>
                   </div>

@@ -42,29 +42,29 @@ export function Field({
   const fieldId = id ?? label.toLowerCase().replace(/\s+/g, '-')
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={fieldId} className="font-sans text-xs font-medium text-slate-700 dark:text-slate-300">
+      <label htmlFor={fieldId} className="font-sans text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
         {label}
       </label>
       <div className="relative flex items-center">
         {leftIcon && (
-          <div className="pointer-events-none absolute left-3 flex items-center text-slate-400 dark:text-slate-500">
+          <div className="pointer-events-none absolute left-3.5 flex items-center text-slate-400 dark:text-slate-500">
             {leftIcon}
           </div>
         )}
         <input
           id={fieldId}
-          className={`w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-sans text-sm text-slate-900
+          className={`w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 font-sans text-sm text-slate-900
             placeholder:text-slate-400 transition-colors
             focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600
             dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500
             dark:focus:border-brand-500 dark:focus:ring-brand-500
-            ${leftIcon ? 'pl-9' : ''}
-            ${rightElement ? 'pr-9' : ''}
+            ${leftIcon ? 'pl-10' : ''}
+            ${rightElement ? 'pr-10' : ''}
             ${error ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500 dark:border-rose-500' : ''} ${className}`}
           {...rest}
         />
         {rightElement && (
-          <div className="absolute right-3 flex items-center">
+          <div className="absolute right-3.5 flex items-center">
             {rightElement}
           </div>
         )}
@@ -73,7 +73,7 @@ export function Field({
         <span className="font-sans text-xs text-slate-500 dark:text-slate-400">{hint}</span>
       )}
       {error && (
-        <span className="font-sans text-xs font-medium text-rose-600 dark:text-rose-400">
+        <span className="font-sans text-xs sm:text-sm font-medium text-rose-600 dark:text-rose-400">
           {error}
         </span>
       )}
@@ -83,7 +83,7 @@ export function Field({
 
 export function LabelText({ children, ...rest }: LabelHTMLAttributes<HTMLLabelElement>) {
   return (
-    <label className="font-sans text-xs font-medium text-slate-700 dark:text-slate-300" {...rest}>
+    <label className="font-sans text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300" {...rest}>
       {children}
     </label>
   )
@@ -118,7 +118,7 @@ export function Badge({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 font-mono text-[11px] font-medium tracking-tight ${toneClasses[tone] || toneClasses.neutral}`}
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 font-mono text-xs font-medium tracking-tight ${toneClasses[tone] || toneClasses.neutral}`}
     >
       {dot && <span className={`h-1.5 w-1.5 rounded-full ${dotClasses[tone] || dotClasses.neutral}`} />}
       {children}
@@ -146,16 +146,16 @@ export function EmptyState({
   action?: ReactNode
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-slate-200 bg-white/60 px-6 py-12 text-center dark:border-slate-800 dark:bg-slate-900/40">
+    <div className="flex flex-col items-center justify-center gap-3.5 rounded-xl border border-dashed border-slate-200 bg-white/60 px-6 py-12 text-center dark:border-slate-800 dark:bg-slate-900/40">
       {icon && (
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400">
           {icon}
         </div>
       )}
-      <div className="max-w-sm">
-        <p className="font-display text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</p>
+      <div className="max-w-md">
+        <p className="font-display text-base font-semibold text-slate-900 dark:text-slate-100">{title}</p>
         {description && (
-          <p className="mt-1 font-sans text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+          <p className="mt-1.5 font-sans text-xs sm:text-sm leading-relaxed text-slate-500 dark:text-slate-400">
             {description}
           </p>
         )}
