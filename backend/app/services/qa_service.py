@@ -37,11 +37,53 @@ class QAService:
         if not question or not question.strip():
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Question cannot be empty.")
 
+        # 1. Semantic Vector Search
         query_vector = self.embedder.embed_texts([question])[0]
         results = self.vector_store.search(
             query_vector, top_k=settings.TOP_K_RESULTS, user_id=user_id, document_ids=document_ids
         )
-        relevant = [r for r in results if r["similarity"] >= settings.RELEVANCE_THRESHOLD]
+
+        # 2. Hybrid Lexical Keyword Boosting: ensure exact keyword matches are never missed
+        import re
+        stopwords = {
+            'what', 'when', 'where', 'which', 'who', 'whom', 'whose', 'why', 'how',
+            'is', 'are', 'was', 'were', 'the', 'a', 'an', 'in', 'on', 'at', 'for',
+            'to', 'of', 'and', 'or', 'does', 'do', 'did', 'tell', 'me', 'about', 'find', 'show', 'give'
+        }
+        q_tokens = [
+            w.lower() for w in re.findall(r'\b[a-zA-Z0-9_\-\./]+\b', question)
+            if len(w) >= 2 and w.lower() not in stopwords
+        ]
+
+        seen_chunk_texts = {r["text"]: r for r in results}
+
+        if q_tokens:
+            for meta in self.vector_store.metadata:
+                if meta["user_id"] != user_id:
+                    continue
+                if document_ids and meta["document_id"] not in document_ids:
+                    continue
+                
+                text_lower = meta["text"].lower()
+                matched_count = sum(1 for token in q_tokens if token in text_lower)
+                if matched_count > 0:
+                    if meta["text"] in seen_chunk_texts:
+                        # Boost existing semantic match
+                        existing = seen_chunk_texts[meta["text"]]
+                        existing["similarity"] = max(existing.get("similarity", 0.0), 0.85 + 0.05 * min(matched_count, 3))
+                    else:
+                        # Add keyword-matched chunk
+                        item = {
+                            **meta,
+                            "score": 0.1,
+                            "similarity": 0.85 + 0.05 * min(matched_count, 3),
+                        }
+                        results.append(item)
+                        seen_chunk_texts[meta["text"]] = item
+
+        # Sort all chunks by similarity score
+        results.sort(key=lambda r: r.get("similarity", 0.0), reverse=True)
+        relevant = [r for r in results[:settings.TOP_K_RESULTS] if r.get("similarity", 0.0) >= settings.RELEVANCE_THRESHOLD]
 
         if not relevant:
             answer_text = NO_INFO_FALLBACK

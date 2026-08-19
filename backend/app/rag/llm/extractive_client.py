@@ -39,6 +39,7 @@ class ExtractiveClient(BaseLLMClient):
         # Separate context excerpts from the trailing Question/Answer section
         qa_split = re.split(r"\n+Question:\s*", user_prompt, maxsplit=1)
         context_part = qa_split[0]
+        question_part = qa_split[1].replace("Answer:", "").strip() if len(qa_split) > 1 else ""
 
         # Match excerpt blocks: [Excerpt N — doc, page P]\ntext
         pattern = r"\[Excerpt\s+\d+\s+—\s+[^\]]+\]\n(.*?)(?=\n\[Excerpt|\Z)"
@@ -53,7 +54,34 @@ class ExtractiveClient(BaseLLMClient):
                 "information about this topic."
             )
 
-        # Return the best (first = highest similarity) passage, cleanly formatted
+        stopwords = {
+            'what', 'when', 'where', 'which', 'who', 'whom', 'whose', 'why', 'how',
+            'is', 'are', 'was', 'were', 'the', 'a', 'an', 'in', 'on', 'at', 'for',
+            'to', 'of', 'and', 'or', 'does', 'do', 'did', 'tell', 'me', 'about', 'find', 'show', 'give'
+        }
+        q_words = [
+            w.lower() for w in re.findall(r'\b[a-zA-Z0-9_\-\./]+\b', question_part)
+            if len(w) >= 2 and w.lower() not in stopwords
+        ]
+
+        # Scan for directly matching lines or sentences across excerpts
+        matching_lines = []
+        if q_words:
+            for exc in excerpts:
+                for line in exc.splitlines():
+                    line_clean = line.strip()
+                    if not line_clean or len(line_clean) < 3:
+                        continue
+                    line_lower = line_clean.lower()
+                    if any(w in line_lower for w in q_words):
+                        if line_clean not in matching_lines:
+                            matching_lines.append(line_clean)
+
+        if matching_lines:
+            bullet_points = "\n".join(f"- {line}" for line in matching_lines[:6])
+            return f"Based on your uploaded documents:\n\n{bullet_points}"
+
+        # Fallback to returning the best passage, cleanly formatted
         best = excerpts[0]
         extra = ""
         if len(excerpts) > 1:
