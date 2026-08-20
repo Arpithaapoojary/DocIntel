@@ -32,6 +32,11 @@ async def lifespan(app: FastAPI):
     # Ensure tables exist
     Base.metadata.create_all(bind=engine)
 
+    # Ensure storage and vector directories exist
+    import os
+    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+    os.makedirs(settings.VECTOR_STORE_DIR, exist_ok=True)
+
     # Seed and guarantee the single designated Admin account
     with SessionLocal() as db:
         admin_user = db.query(User).filter(User.email == settings.ADMIN_EMAIL).first()
@@ -56,6 +61,13 @@ async def lifespan(app: FastAPI):
             u.is_admin = False
         if other_admins:
             db.commit()
+
+    # Pre-warm embedder in background so first upload is instant
+    try:
+        from app.rag.embeddings.dependency import get_embedder
+        get_embedder().embed_texts(["DocIntel warmup sentence"])
+    except Exception as e:
+        print(f"Embedder warmup notice: {e}")
 
     yield
 
