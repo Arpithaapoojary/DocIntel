@@ -18,6 +18,7 @@ from app.api import documents as documents_router
 from app.api import qa as qa_router
 from app.api import search as search_router
 from app.core.config import settings
+from app.core.security import hash_password
 from app.database.session import Base, engine, SessionLocal
 from app.middleware.rate_limit import RateLimitMiddleware
 
@@ -31,14 +32,29 @@ async def lifespan(app: FastAPI):
     # Ensure tables exist
     Base.metadata.create_all(bind=engine)
 
-    # Strict Single-Admin Enforcement:
-    # Ensure there is at most ONE admin. If multiple admins exist, keep only
-    # the earliest created user as admin and set all other accounts to regular users.
+    # Seed and guarantee the single designated Admin account
     with SessionLocal() as db:
-        admins = db.query(User).filter(User.is_admin == True).order_by(User.created_at.asc()).all()
-        if len(admins) > 1:
-            for extra_admin in admins[1:]:
-                extra_admin.is_admin = False
+        admin_user = db.query(User).filter(User.email == settings.ADMIN_EMAIL).first()
+        if not admin_user:
+            admin_user = User(
+                email=settings.ADMIN_EMAIL,
+                full_name="System Administrator",
+                hashed_password=hash_password(settings.ADMIN_PASSWORD),
+                is_admin=True,
+            )
+            db.add(admin_user)
+            db.commit()
+        else:
+            admin_user.is_admin = True
+            # Update password if needed
+            admin_user.hashed_password = hash_password(settings.ADMIN_PASSWORD)
+            db.commit()
+
+        # Demote all other users to ensure strictly only 1 admin exists
+        other_admins = db.query(User).filter(User.email != settings.ADMIN_EMAIL, User.is_admin == True).all()
+        for u in other_admins:
+            u.is_admin = False
+        if other_admins:
             db.commit()
 
     yield

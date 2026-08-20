@@ -22,11 +22,8 @@ class AuthService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="An account with this email already exists.",
             )
-        # Bootstrap: the very first user on a fresh install becomes admin
-        # automatically, since there's no other way to reach admin-only
-        # endpoints yet. Every subsequent registration is a normal user.
-        is_first_user = self.repo.count_users() == 0
-        user = self.repo.create(user_in, is_admin=is_first_user)
+        # All public registrations are standard users (the single admin is pre-seeded)
+        user = self.repo.create(user_in, is_admin=False)
         return UserOut.model_validate(user)
 
     def login(self, credentials: UserLogin) -> Token:
