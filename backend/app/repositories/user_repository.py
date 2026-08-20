@@ -14,15 +14,16 @@ class UserRepository:
         self.db = db
 
     def get_by_email(self, email: str) -> User | None:
-        return self.db.query(User).filter(User.email == email).first()
+        clean_email = email.strip().lower()
+        return self.db.query(User).filter(User.email.ilike(clean_email)).first()
 
     def get_by_id(self, user_id: str) -> User | None:
         return self.db.query(User).filter(User.id == user_id).first()
 
     def create(self, user_in: UserCreate, is_admin: bool = False) -> User:
         user = User(
-            email=user_in.email,
-            full_name=user_in.full_name,
+            email=user_in.email.strip().lower(),
+            full_name=user_in.full_name.strip(),
             hashed_password=hash_password(user_in.password),
             is_admin=is_admin,
         )
