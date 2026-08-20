@@ -18,18 +18,29 @@ from app.api import documents as documents_router
 from app.api import qa as qa_router
 from app.api import search as search_router
 from app.core.config import settings
-from app.database.session import Base, engine
+from app.database.session import Base, engine, SessionLocal
 from app.middleware.rate_limit import RateLimitMiddleware
 
 # Import models so SQLAlchemy metadata knows about them before create_all.
 from app.models import user, document, chat_message  # noqa: F401
+from app.models.user import User
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Phase 1 uses create_all for simplicity. Swap for Alembic migrations
-    # once the schema stabilizes across later phases.
+    # Ensure tables exist
     Base.metadata.create_all(bind=engine)
+
+    # Strict Single-Admin Enforcement:
+    # Ensure there is at most ONE admin. If multiple admins exist, keep only
+    # the earliest created user as admin and set all other accounts to regular users.
+    with SessionLocal() as db:
+        admins = db.query(User).filter(User.is_admin == True).order_by(User.created_at.asc()).all()
+        if len(admins) > 1:
+            for extra_admin in admins[1:]:
+                extra_admin.is_admin = False
+            db.commit()
+
     yield
 
 

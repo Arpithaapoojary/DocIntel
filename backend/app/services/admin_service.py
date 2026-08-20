@@ -70,7 +70,13 @@ class AdminService:
         if user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
         
-        updated_user = self.user_repo.update_admin_role(user, not user.is_admin)
+        if not user.is_admin:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Strict Single-Admin Policy: Only one admin account is allowed. Additional admins cannot be created.",
+            )
+
+        updated_user = self.user_repo.update_admin_role(user, False)
         return AdminUserOut(
             id=updated_user.id,
             email=updated_user.email,

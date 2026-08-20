@@ -162,7 +162,7 @@ export function AdminPage() {
                       </td>
                       <td className="px-5 py-4">
                         <Badge tone={u.is_admin ? 'warning' : 'neutral'} dot={u.is_admin}>
-                          {u.is_admin ? 'Admin' : 'Member'}
+                          {u.is_admin ? 'Primary Admin' : 'Member'}
                         </Badge>
                       </td>
                       <td className="px-5 py-4 font-mono text-slate-600 dark:text-slate-400">
@@ -173,20 +173,15 @@ export function AdminPage() {
                       </td>
                       <td className="px-5 py-4 text-right">
                         <div className="inline-flex items-center gap-2">
-                          <button
-                            onClick={() => handleToggleRole(u)}
-                            title={u.is_admin ? 'Revoke Admin' : 'Grant Admin'}
-                            className="rounded p-1.5 text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
-                          >
-                            {u.is_admin ? <ShieldAlert className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
-                          </button>
-                          <button
-                            onClick={() => handleDelete(u)}
-                            title="Delete User"
-                            className="rounded p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+                          {!u.is_admin && (
+                            <button
+                              onClick={() => handleDelete(u)}
+                              title="Delete User"
+                              className="rounded p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
