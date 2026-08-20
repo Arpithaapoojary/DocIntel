@@ -278,9 +278,9 @@ Default and only fully working option right now is **OpenAI** (`LLM_PROVIDER=ope
 clear "not implemented yet" error if selected — it's wired into the same `BaseLLMClient`
 interface so swapping it in later won't touch the QA service, prompts, or retrieval logic.
 
-## What's next (Phase 6)
+## What's next (Phase - 6)
 
 - More thorough automated tests (frontend component/integration tests; backend edge cases)
 - GitHub Actions CI/CD: run tests + build Docker images on every push
 - Deployment guide for Render/Railway/AWS EC2, plus a live demo URL
-- Sequence/architecture diagrams and a polished top-level README with badges and screenshots
+- Sequence/architecture diagrams and a polished top-level README with badges and screenshots     
