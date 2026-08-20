@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import {
-  Users, HardDrive, MessageSquare, ShieldCheck, ShieldAlert,
+  Users, HardDrive, MessageSquare,
   Trash2, RefreshCw
 } from 'lucide-react'
 import {
   adminDeleteUser, extractErrorMessage,
-  adminGetAnalytics, adminListUsers, adminToggleUserRole
+  adminGetAnalytics, adminListUsers
 } from '../lib/api'
 import type { AdminAnalytics, AdminUser } from '../types'
 import { Badge, Skeleton } from '../components/ui/primitives'
@@ -37,16 +37,6 @@ export function AdminPage() {
   useEffect(() => {
     loadData().finally(() => setLoading(false))
   }, [])
-
-  async function handleToggleRole(u: AdminUser) {
-    try {
-      await adminToggleUserRole(u.id)
-      notify(`Role updated for ${u.email}.`)
-      await loadData()
-    } catch (err) {
-      notify(extractErrorMessage(err, 'Could not toggle role.'), 'error')
-    }
-  }
 
   async function handleDelete(u: AdminUser) {
     if (!confirm(`Delete user ${u.email}? This cascades to all their uploaded documents and chat histories.`)) return
