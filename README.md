@@ -3,6 +3,7 @@
 **Status:** Phase 5 of 6 — React frontend. ✅ Backend still 50/50 tests passing; frontend builds clean
 (0 TypeScript errors, 0 lint errors).
 
+
 Phases 1–4 built the backend. **Phase 5 adds the actual UI** — a React app you open in a browser
 instead of curl commands or the `/api/docs` page.
 
